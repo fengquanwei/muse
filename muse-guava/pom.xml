@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>muse-test</artifactId>
+    <artifactId>muse-guava</artifactId>
 
     <dependencies>
         <dependency>
@@ -18,6 +18,5 @@
             <version>27.0-jre</version>
         </dependency>
     </dependencies>
-
 
 </project>

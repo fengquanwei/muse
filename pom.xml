@@ -11,6 +11,7 @@
     <modules>
         <module>muse-test</module>
         <module>muse-util</module>
+        <module>muse-guava</module>
     </modules>
 
 
