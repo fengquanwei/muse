@@ -1,3 +1,5 @@
+import com.google.common.base.Preconditions;
+
 /**
  * Test
  *
@@ -6,6 +8,6 @@
  **/
 public class Test {
     public static void main(String[] args) {
-
+        Preconditions.checkArgument(true);
     }
 }
