@@ -12,6 +12,7 @@
         <module>muse-util</module>
         <module>muse-guava</module>
         <module>muse-test</module>
+        <module>muse-springmvc</module>
     </modules>
 
 
