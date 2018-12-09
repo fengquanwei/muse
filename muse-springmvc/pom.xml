@@ -13,8 +13,6 @@
 
     <properties>
         <servlet.version>3.0.1</servlet.version>
-        <jsp.version>2.2</jsp.version>
-        <jstl.version>1.2</jstl.version>
         <spring.version>4.2.0.RELEASE</spring.version>
     </properties>
 
