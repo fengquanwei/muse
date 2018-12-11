@@ -51,6 +51,18 @@ public class Base64Util {
     }
 
     /**
+     * BASE64 编码
+     */
+    public static String encodeBuffer(byte[] data) {
+        if (data == null || data.length == 0) {
+            return null;
+        }
+
+        BASE64Encoder base64Encoder = new BASE64Encoder();
+        return base64Encoder.encodeBuffer(data);
+    }
+
+    /**
      * BASE64 解码
      */
     public static String decodeToString(String encode) throws IOException {
