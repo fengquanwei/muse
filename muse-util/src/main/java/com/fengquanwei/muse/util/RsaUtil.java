@@ -54,6 +54,16 @@ public class RsaUtil {
     }
 
     /**
+     * 使用 openssl 生成公私密钥对
+     * 1 生成私钥
+     * openssl genrsa -out rsa_private_key_pkcs1.pem 1024
+     * 2 根据私钥生成公钥
+     * openssl rsa -in rsa_private_key_pkcs1.pem -pubout -out rsa_public_key.pub
+     * 3 将私钥转换成 pkcs8 格式
+     * openssl pkcs8 -topk8 -inform PEM -in rsa_private_key_pkcs1.pem -outform PEM -nocrypt > rsa_private_key.pem
+     */
+
+    /**
      * 获取公钥
      */
     public static PublicKey getPublicKey(String base64PublicKey) {
@@ -127,22 +137,22 @@ public class RsaUtil {
         // 生成并打印公私密钥对
 //        generateAndPrintKeyPair();
 
-        String base64PublicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCcp/mwRHYzSwum74xw4X+LHEZ0jY11OpS87397\n" +
-                "RsN+Jk5m0mzZ91RIKuOvlS3RMENyTE2FQPdiEMz2b9EhIuPoMWq1EDLiP9BWXRY7a2DZt8qWPexj\n" +
-                "GEHju3Q11hKZLBYYZNQ6BdsPjjTwb7l2AdT9vdaaUpOFBtGPBUjMK35B0wIDAQAB\n";
+        String base64PublicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxLeARdFJCGhgNGUT5DUQW3qrTuvvgzQWcn7+D\n" +
+                "mN2oo2ABdsGr88BGIcCtU8o1HFFFR37JijDZHx9TTl3ukNGqXEu1u7MFNVm0Jt3gWYK1EMzxV6rN\n" +
+                "cjTvnspzjxRkj3GQoc3ozzJlNwl4pa86DAcvqW8zvJmkHtAIIBfF0OBfLQIDAQAB\n";
 
-        String base64PrivateKey = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAJyn+bBEdjNLC6bvjHDhf4scRnSN\n" +
-                "jXU6lLzvf3tGw34mTmbSbNn3VEgq46+VLdEwQ3JMTYVA92IQzPZv0SEi4+gxarUQMuI/0FZdFjtr\n" +
-                "YNm3ypY97GMYQeO7dDXWEpksFhhk1DoF2w+ONPBvuXYB1P291ppSk4UG0Y8FSMwrfkHTAgMBAAEC\n" +
-                "gYBexIcaCPBway+rVzLgfqnHn91HWPKAPmYIPeIi01YkFExNi3JqEWMdHUULzPUgnU/P7zTeLcT5\n" +
-                "wCwd0Nr0bsTrl56jEObFa61IkzN8vdLBsa6LpcRAYwsI4ffclsB1THSYKBGN5qPKMdj/PVeRNW4i\n" +
-                "Oe7Effr47hmvqz9CHEI9cQJBAOV10I6SYaxVyH9XRmYTR6x+lDdRkRxtM4IJ5tN8RkcFY8ShgPb1\n" +
-                "AnYMqSdUJSNbTI4chCeaEWLF88OjSSUbQo8CQQCuxnll8JTpx8euK1WPOxstm89FR0okkPQRyhcg\n" +
-                "Qeppim6F0OxToWgDaMc/kfGyewmVlqJVssdiD+8q32XXfh59AkEAkusukDr1wwxiBfbxomXx3GZn\n" +
-                "rEvTp+nbswV4AC1wKgUvbjUih/00iDVvETl1VgAdMljb3SduvlmUzMz+Bn4/zQJAM3g3oBGtiPtQ\n" +
-                "jrYsSDX71v6fl6Na7lHRzrtY/CLtSY9+5OGV9zr9SqO8qbftGcaqF+d4fwxbM0HGCTYo48E8cQJB\n" +
-                "AIW4NymL9tfrNevZlu2H6Bo0gpsRIBzHP+AexwIKcW0bAxSPiR48y1W0dTVnJgc7zOx1wgYJhCJi\n" +
-                "OqV+zNchIys=\n";
+        String base64PrivateKey = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBALEt4BF0UkIaGA0ZRPkNRBbeqtO6\n" +
+                "++DNBZyfv4OY3aijYAF2wavzwEYhwK1TyjUcUUVHfsmKMNkfH1NOXe6Q0apcS7W7swU1WbQm3eBZ\n" +
+                "grUQzPFXqs1yNO+eynOPFGSPcZChzejPMmU3CXilrzoMBy+pbzO8maQe0AggF8XQ4F8tAgMBAAEC\n" +
+                "gYAldPxc1EmbneadxkzVlh9h8lsM/gfH47AfB4q2aHfb8gYW6SNSlep9KR+RxRgHmF/6FH5SXzuq\n" +
+                "ezDlLLkg+U7JqjZ6wpSoJ9G8fSQknQKPGrL779Qr0CbPBWP9esxeiomhq6Od3imEeHW4ESfSMMmx\n" +
+                "bo0mAuTw8QLVY+2KRPUNhQJBANwHaGIegtIrr2SNBK5oln8N9xNaUK1/r19VD8uNXSkLmS34xr3r\n" +
+                "37B4AizX0H3udPiipTnBHw1HdIljpCvTKGsCQQDOJSG+Lh08LTfn57Do2WkZ4i7knp13hIrMmtOg\n" +
+                "waHHGqssj6ZeE908npJf77jGB2TJQIIq6goDEfI7k3EbANzHAkBxKy45KVBIIUf5A78gpZKijuBC\n" +
+                "B/XvBvmAoxOYsoD0F48V4hr2nFdVQKR9xBLscrWfHKi25+m8vr/l2mYaVGU5AkBWE3EcfRrd9q+i\n" +
+                "WL8o6ycUlLop4gU0U5a1SmzVciTAA2W4LJ82Jys41ame/3Ty00GFOzde/eyCTasMr0sKEHkfAkAk\n" +
+                "3KCmURraCCqjYWx9rRJa03Y4ZfQdchfCzXoYLWSZIuQvPLnVidLVc7KLdm0nwYaac94Rakj5TSLG\n" +
+                "SD/5IEf+\n";
 
         // 获取公私密钥
         PublicKey publicKey = getPublicKey(base64PublicKey);
