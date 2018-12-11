@@ -6,12 +6,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Md5 工具类
+ * MD5 工具类
  *
  * @author fengquanwei
  * @create 2018/12/10 16:32
  **/
 public class Md5Util {
+    /**
+     * MD5 摘要（转为 16 进制，使用小写字母 a-e）
+     */
     public static String md5ToHexString(String message) {
         if (message == null || message.length() == 0) {
             return null;
@@ -36,6 +39,9 @@ public class Md5Util {
         return result.toString();
     }
 
+    /**
+     * MD5 摘要
+     */
     public static byte[] md5(String message) {
         if (message == null || message.length() == 0) {
             return null;
@@ -44,6 +50,9 @@ public class Md5Util {
         return md5(message, StandardCharsets.UTF_8);
     }
 
+    /**
+     * MD5 摘要
+     */
     public static byte[] md5(String message, Charset charset) {
         if (message == null || message.length() == 0) {
             return null;
@@ -62,6 +71,9 @@ public class Md5Util {
         return null;
     }
 
+    /**
+     * 测试
+     */
     public static void main(String[] args) {
         String message = "你好";
         System.out.println(md5ToHexString(message));

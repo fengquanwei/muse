@@ -14,6 +14,9 @@ import java.nio.charset.StandardCharsets;
  * @create 2018/12/10 16:35
  **/
 public class Base64Util {
+    /**
+     * BASE64 编码
+     */
     public static String encode(String data) {
         if (data == null || data.length() == 0) {
             return null;
@@ -22,6 +25,9 @@ public class Base64Util {
         return encode(data, StandardCharsets.UTF_8);
     }
 
+    /**
+     * BASE64 编码
+     */
     public static String encode(String data, Charset charset) {
         if (data == null || data.length() == 0) {
             return null;
@@ -32,6 +38,9 @@ public class Base64Util {
         return encode(data.getBytes(charset));
     }
 
+    /**
+     * BASE64 编码
+     */
     public static String encode(byte[] data) {
         if (data == null || data.length == 0) {
             return null;
@@ -41,6 +50,9 @@ public class Base64Util {
         return base64Encoder.encode(data);
     }
 
+    /**
+     * BASE64 解码
+     */
     public static String decodeToString(String encode) throws IOException {
         if (encode == null || encode.length() == 0) {
             return null;
@@ -49,6 +61,9 @@ public class Base64Util {
         return decodeToString(encode, StandardCharsets.UTF_8);
     }
 
+    /**
+     * BASE64 解码
+     */
     public static String decodeToString(String encode, Charset charset) throws IOException {
         if (encode == null || encode.length() == 0) {
             return null;
@@ -59,6 +74,9 @@ public class Base64Util {
         return new String(decode(encode), charset);
     }
 
+    /**
+     * BASE64 解码
+     */
     public static byte[] decode(String encode) throws IOException {
         if (encode == null || encode.length() == 0) {
             return null;
@@ -68,6 +86,9 @@ public class Base64Util {
         return base64Decoder.decodeBuffer(encode);
     }
 
+    /**
+     * 测试
+     */
     public static void main(String[] args) throws IOException {
         String data = "你好";
 
