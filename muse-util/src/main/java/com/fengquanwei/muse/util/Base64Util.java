@@ -65,7 +65,7 @@ public class Base64Util {
     /**
      * BASE64 解码
      */
-    public static String decodeToString(String encode) throws IOException {
+    public static String decodeToString(String encode) {
         if (encode == null || encode.length() == 0) {
             return null;
         }
@@ -76,7 +76,7 @@ public class Base64Util {
     /**
      * BASE64 解码
      */
-    public static String decodeToString(String encode, Charset charset) throws IOException {
+    public static String decodeToString(String encode, Charset charset) {
         if (encode == null || encode.length() == 0) {
             return null;
         }
@@ -89,19 +89,25 @@ public class Base64Util {
     /**
      * BASE64 解码
      */
-    public static byte[] decode(String encode) throws IOException {
+    public static byte[] decode(String encode) {
         if (encode == null || encode.length() == 0) {
             return null;
         }
 
         BASE64Decoder base64Decoder = new BASE64Decoder();
-        return base64Decoder.decodeBuffer(encode);
+        try {
+            return base64Decoder.decodeBuffer(encode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     /**
      * 测试
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         String data = "你好";
 
         // 编码
