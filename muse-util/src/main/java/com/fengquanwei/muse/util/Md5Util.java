@@ -1,6 +1,5 @@
 package com.fengquanwei.muse.util;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,7 +14,7 @@ public class Md5Util {
     /**
      * MD5 摘要（转为 16 进制，使用小写字母 a-e）
      */
-    public static String md5ToHexString(String message) {
+    public static String md5ToString(String message) {
         if (message == null || message.length() == 0) {
             return null;
         }
@@ -47,35 +46,32 @@ public class Md5Util {
             return null;
         }
 
-        return md5(message, StandardCharsets.UTF_8);
+        return md5(message.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
      * MD5 摘要
      */
-    public static byte[] md5(String message, Charset charset) {
-        if (message == null || message.length() == 0) {
+    public static byte[] md5(byte[] message) {
+        if (message == null || message.length == 0) {
             return null;
         }
 
-        charset = charset == null ? StandardCharsets.UTF_8 : charset;
-
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
-            md5.update(message.getBytes(charset));
+            md5.update(message);
             return md5.digest();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            return null;
         }
-
-        return null;
     }
 
     /**
      * 测试
      */
     public static void main(String[] args) {
-        String message = "你好";
-        System.out.println(md5ToHexString(message));
+        String message = "hello world";
+        System.out.println(md5ToString(message));
     }
 }

@@ -4,7 +4,6 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -22,20 +21,7 @@ public class Base64Util {
             return null;
         }
 
-        return encode(data, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * BASE64 编码
-     */
-    public static String encode(String data, Charset charset) {
-        if (data == null || data.length() == 0) {
-            return null;
-        }
-
-        charset = charset == null ? StandardCharsets.UTF_8 : charset;
-
-        return encode(data.getBytes(charset));
+        return encode(data.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -65,50 +51,36 @@ public class Base64Util {
     /**
      * BASE64 解码
      */
-    public static String decodeToString(String encode) {
-        if (encode == null || encode.length() == 0) {
+    public static String decodeToString(String data) {
+        if (data == null || data.length() == 0) {
             return null;
         }
 
-        return decodeToString(encode, StandardCharsets.UTF_8);
+        return new String(decode(data), StandardCharsets.UTF_8);
     }
 
     /**
      * BASE64 解码
      */
-    public static String decodeToString(String encode, Charset charset) {
-        if (encode == null || encode.length() == 0) {
-            return null;
-        }
-
-        charset = charset == null ? StandardCharsets.UTF_8 : charset;
-
-        return new String(decode(encode), charset);
-    }
-
-    /**
-     * BASE64 解码
-     */
-    public static byte[] decode(String encode) {
-        if (encode == null || encode.length() == 0) {
+    public static byte[] decode(String data) {
+        if (data == null || data.length() == 0) {
             return null;
         }
 
         BASE64Decoder base64Decoder = new BASE64Decoder();
         try {
-            return base64Decoder.decodeBuffer(encode);
+            return base64Decoder.decodeBuffer(data);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-
-        return null;
     }
 
     /**
      * 测试
      */
     public static void main(String[] args) {
-        String data = "你好";
+        String data = "hello world";
 
         // 编码
         String encode = encode(data);

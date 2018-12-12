@@ -1,6 +1,7 @@
 package com.fengquanwei.muse.util;
 
 import javax.crypto.Cipher;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -114,15 +115,15 @@ public class RsaUtil {
     /**
      * 使用私钥解密
      */
-    public static byte[] decrypt(byte[] encrypt, PrivateKey privateKey) {
-        if (encrypt == null || encrypt.length == 0 || privateKey == null) {
+    public static byte[] decrypt(byte[] data, PrivateKey privateKey) {
+        if (data == null || data.length == 0 || privateKey == null) {
             return null;
         }
 
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            return cipher.doFinal(encrypt);
+            return cipher.doFinal(data);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -158,14 +159,13 @@ public class RsaUtil {
         PublicKey publicKey = getPublicKey(base64PublicKey);
         PrivateKey privateKey = getPrivateKey(base64PrivateKey);
 
-        String data = "hello";
+        String data = "hello world";
 
         // 使用公钥加密
-        byte[] encrypt = encrypt(data.getBytes(), publicKey);
+        byte[] encrypt = encrypt(data.getBytes(StandardCharsets.UTF_8), publicKey);
 
         // 使用私钥解密
         byte[] decrypt = decrypt(encrypt, privateKey);
-        System.out.println("decrypt: " + new String(decrypt));
-
+        System.out.println(new String(decrypt, StandardCharsets.UTF_8));
     }
 }
