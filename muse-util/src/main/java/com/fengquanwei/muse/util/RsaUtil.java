@@ -14,91 +14,16 @@ import java.security.spec.X509EncodedKeySpec;
  **/
 public class RsaUtil {
     /**
-     * 生成并打印公私密钥对
-     */
-    public static void generateAndPrintKeyPair() {
-        KeyPair keyPair = generateKeyPair();
-
-        if (keyPair == null) {
-            return;
-        }
-
-        PublicKey publicKey = keyPair.getPublic();
-        System.out.println("========== public key start ==========");
-        System.out.println(Base64Util.encodeBuffer(publicKey.getEncoded()));
-        System.out.println("========== public key end ==========");
-
-        PrivateKey privateKey = keyPair.getPrivate();
-        System.out.println("========== private key start ==========");
-        System.out.println(Base64Util.encodeBuffer(privateKey.getEncoded()));
-        System.out.println("========== private key end ==========");
-    }
-
-    /**
-     * 生成公私密钥对
-     */
-    public static KeyPair generateKeyPair() {
-        // 加密算法：RSA
-        KeyPairGenerator keyPairGenerator;
-        try {
-            keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        // 密钥长度：1024 位
-        keyPairGenerator.initialize(1024, new SecureRandom());
-
-        // 生成公私密钥对（公钥：x.509 格式，私钥：pkcs8 格式）
-        return keyPairGenerator.generateKeyPair();
-    }
-
-    /**
-     * 使用 openssl 生成公私密钥对
-     * 1 生成私钥
-     * openssl genrsa -out rsa_private_key_pkcs1.pem 1024
-     * 2 根据私钥生成公钥
-     * openssl rsa -in rsa_private_key_pkcs1.pem -pubout -out rsa_public_key.pub
-     * 3 将私钥转换成 pkcs8 格式
-     * openssl pkcs8 -topk8 -inform PEM -in rsa_private_key_pkcs1.pem -outform PEM -nocrypt > rsa_private_key.pem
-     */
-
-    /**
-     * 获取公钥
-     */
-    public static PublicKey getPublicKey(String base64PublicKey) {
-        try {
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64Util.decode(base64PublicKey));
-
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return keyFactory.generatePublic(keySpec);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * 获取私钥
-     */
-    public static PrivateKey getPrivateKey(String base64PrivateKey) {
-        try {
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64Util.decode(base64PrivateKey));
-
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return keyFactory.generatePrivate(keySpec);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
      * 使用公钥加密
      */
-    public static String encryptToString(String data, PublicKey publicKey) {
-        if (data == null || data.length() == 0 || publicKey == null) {
+    public static String encryptToString(String data, String base64PublicKey) {
+        if (data == null || data.length() == 0 || base64PublicKey == null || base64PublicKey.length() == 0) {
+            return null;
+        }
+
+        PublicKey publicKey = getPublicKey(base64PublicKey);
+
+        if (publicKey == null) {
             return null;
         }
 
@@ -132,8 +57,14 @@ public class RsaUtil {
     /**
      * 使用私钥解密
      */
-    public static String decryptToString(String data, PrivateKey privateKey) {
-        if (data == null || data.length() == 0 || privateKey == null) {
+    public static String decryptToString(String data, String base64PrivateKey) {
+        if (data == null || data.length() == 0 || base64PrivateKey == null || base64PrivateKey.length() == 0) {
+            return null;
+        }
+
+        PrivateKey privateKey = getPrivateKey(base64PrivateKey);
+
+        if (privateKey == null) {
             return null;
         }
 
@@ -166,6 +97,87 @@ public class RsaUtil {
     }
 
     /**
+     * 获取公钥
+     */
+    private static PublicKey getPublicKey(String base64PublicKey) {
+        try {
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64Util.decode(base64PublicKey));
+
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return keyFactory.generatePublic(keySpec);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 获取私钥
+     */
+    private static PrivateKey getPrivateKey(String base64PrivateKey) {
+        try {
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64Util.decode(base64PrivateKey));
+
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return keyFactory.generatePrivate(keySpec);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 生成并打印公私密钥对
+     */
+    private static void generateAndPrintKeyPair() {
+        KeyPair keyPair = generateKeyPair();
+
+        if (keyPair == null) {
+            return;
+        }
+
+        PublicKey publicKey = keyPair.getPublic();
+        System.out.println("========== public key start ==========");
+        System.out.println(Base64Util.encodeBuffer(publicKey.getEncoded()));
+        System.out.println("========== public key end ==========");
+
+        PrivateKey privateKey = keyPair.getPrivate();
+        System.out.println("========== private key start ==========");
+        System.out.println(Base64Util.encodeBuffer(privateKey.getEncoded()));
+        System.out.println("========== private key end ==========");
+    }
+
+    /**
+     * 生成公私密钥对
+     */
+    private static KeyPair generateKeyPair() {
+        // 加密算法：RSA
+        KeyPairGenerator keyPairGenerator;
+        try {
+            keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        // 密钥长度：1024 位
+        keyPairGenerator.initialize(1024, new SecureRandom());
+
+        // 生成公私密钥对（公钥：x.509 格式，私钥：pkcs8 格式）
+        return keyPairGenerator.generateKeyPair();
+    }
+
+    /**
+     * 使用 openssl 生成公私密钥对
+     * 1 生成私钥
+     * openssl genrsa -out rsa_private_key_pkcs1.pem 1024
+     * 2 根据私钥生成公钥
+     * openssl rsa -in rsa_private_key_pkcs1.pem -pubout -out rsa_public_key.pub
+     * 3 将私钥转换成 pkcs8 格式
+     * openssl pkcs8 -topk8 -inform PEM -in rsa_private_key_pkcs1.pem -outform PEM -nocrypt > rsa_private_key.pem
+     */
+
+    /**
      * 测试
      */
     public static void main(String[] args) {
@@ -189,18 +201,14 @@ public class RsaUtil {
                 "3KCmURraCCqjYWx9rRJa03Y4ZfQdchfCzXoYLWSZIuQvPLnVidLVc7KLdm0nwYaac94Rakj5TSLG\n" +
                 "SD/5IEf+\n";
 
-        // 获取公私密钥
-        PublicKey publicKey = getPublicKey(base64PublicKey);
-        PrivateKey privateKey = getPrivateKey(base64PrivateKey);
-
         String data = "hello world";
 
         // 使用公钥加密
-        String encrypt = encryptToString(data, publicKey);
+        String encrypt = encryptToString(data, base64PublicKey);
         System.out.println(encrypt);
 
         // 使用私钥解密
-        String decrypt = decryptToString(encrypt, privateKey);
+        String decrypt = decryptToString(encrypt, base64PrivateKey);
         System.out.println(decrypt);
     }
 }
