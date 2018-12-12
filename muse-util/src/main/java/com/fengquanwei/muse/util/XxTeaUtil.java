@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * XXTea 工具类
- * https://github.com/xxtea/xxtea-java/blob/master/src/main/java/org/xxtea/XXTEA.java
  *
  * @author fengquanwei
  * @create 2018/12/12 11:12
