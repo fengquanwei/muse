@@ -1,5 +1,8 @@
 package com.fengquanwei.muse.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -11,6 +14,8 @@ import java.security.NoSuchAlgorithmException;
  * @create 2018/12/10 16:32
  **/
 public class Md5Util {
+    private static Logger logger = LoggerFactory.getLogger(Md5Util.class);
+
     /**
      * MD5 摘要（转为 16 进制，使用小写字母 a-e）
      */
@@ -51,7 +56,7 @@ public class Md5Util {
             md5.update(message);
             return md5.digest();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            logger.error("md5 error", e);
             return null;
         }
     }

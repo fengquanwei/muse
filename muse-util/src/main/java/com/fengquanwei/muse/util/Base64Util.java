@@ -1,5 +1,7 @@
 package com.fengquanwei.muse.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -13,6 +15,8 @@ import java.nio.charset.StandardCharsets;
  * @create 2018/12/10 16:35
  **/
 public class Base64Util {
+    private static Logger logger = LoggerFactory.getLogger(Base64Util.class);
+
     /**
      * BASE64 编码
      */
@@ -71,10 +75,9 @@ public class Base64Util {
         try {
             return base64Decoder.decodeBuffer(data);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("decode error", e);
             return null;
         }
-
     }
 
     /**

@@ -1,5 +1,8 @@
 package com.fengquanwei.muse.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -13,6 +16,8 @@ import java.security.spec.X509EncodedKeySpec;
  * @create 2018/12/11 10:37
  **/
 public class RsaUtil {
+    private static Logger logger = LoggerFactory.getLogger(RsaUtil.class);
+
     /**
      * 使用公钥加密
      */
@@ -72,7 +77,7 @@ public class RsaUtil {
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return cipher.doFinal(data);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("encrypt error", e);
             return null;
         }
     }
@@ -136,7 +141,7 @@ public class RsaUtil {
             cipher.init(Cipher.DECRYPT_MODE, key);
             return cipher.doFinal(data);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("decrypt error", e);
             return null;
         }
     }
@@ -151,7 +156,7 @@ public class RsaUtil {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(keySpec);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("getPublicKey error", e);
             return null;
         }
     }
@@ -166,7 +171,7 @@ public class RsaUtil {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePrivate(keySpec);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("getPrivateKey error", e);
             return null;
         }
     }
@@ -201,7 +206,7 @@ public class RsaUtil {
         try {
             keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            logger.error("generateKeyPair error", e);
             return null;
         }
 
