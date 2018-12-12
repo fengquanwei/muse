@@ -16,7 +16,7 @@ public class RsaUtil {
     /**
      * 使用公钥加密
      */
-    public static String encryptToString(String data, String base64PublicKey) {
+    public static String encryptWithPublicKey(String data, String base64PublicKey) {
         if (data == null || data.length() == 0 || base64PublicKey == null || base64PublicKey.length() == 0) {
             return null;
         }
@@ -37,16 +37,39 @@ public class RsaUtil {
     }
 
     /**
-     * 使用公钥加密
+     * 使用私钥加密
      */
-    public static byte[] encrypt(byte[] data, PublicKey publicKey) {
-        if (data == null || data.length == 0 || publicKey == null) {
+    public static String encryptWithPrivateKey(String data, String base64PrivateKey) {
+        if (data == null || data.length() == 0 || base64PrivateKey == null || base64PrivateKey.length() == 0) {
+            return null;
+        }
+
+        PrivateKey privateKey = getPrivateKey(base64PrivateKey);
+
+        if (privateKey == null) {
+            return null;
+        }
+
+        byte[] bytes = encrypt(data.getBytes(StandardCharsets.UTF_8), privateKey);
+
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+
+        return Base64Util.encode(bytes);
+    }
+
+    /**
+     * 加密
+     */
+    public static byte[] encrypt(byte[] data, Key key) {
+        if (data == null || data.length == 0 || key == null) {
             return null;
         }
 
         try {
             Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
             return cipher.doFinal(data);
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,9 +78,32 @@ public class RsaUtil {
     }
 
     /**
+     * 使用公钥解密
+     */
+    public static String decryptWithPublicKey(String data, String base64PublicKey) {
+        if (data == null || data.length() == 0 || base64PublicKey == null || base64PublicKey.length() == 0) {
+            return null;
+        }
+
+        PublicKey publicKey = getPublicKey(base64PublicKey);
+
+        if (publicKey == null) {
+            return null;
+        }
+
+        byte[] bytes = decrypt(Base64Util.decode(data), publicKey);
+
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    /**
      * 使用私钥解密
      */
-    public static String decryptToString(String data, String base64PrivateKey) {
+    public static String decryptWithPrivateKey(String data, String base64PrivateKey) {
         if (data == null || data.length() == 0 || base64PrivateKey == null || base64PrivateKey.length() == 0) {
             return null;
         }
@@ -78,22 +124,21 @@ public class RsaUtil {
     }
 
     /**
-     * 使用私钥解密
+     * 解密
      */
-    public static byte[] decrypt(byte[] data, PrivateKey privateKey) {
-        if (data == null || data.length == 0 || privateKey == null) {
+    public static byte[] decrypt(byte[] data, Key key) {
+        if (data == null || data.length == 0 || key == null) {
             return null;
         }
 
         try {
             Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            cipher.init(Cipher.DECRYPT_MODE, key);
             return cipher.doFinal(data);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-
     }
 
     /**
@@ -204,11 +249,19 @@ public class RsaUtil {
         String data = "hello world";
 
         // 使用公钥加密
-        String encrypt = encryptToString(data, base64PublicKey);
+        String encrypt = encryptWithPublicKey(data, base64PublicKey);
         System.out.println(encrypt);
 
         // 使用私钥解密
-        String decrypt = decryptToString(encrypt, base64PrivateKey);
+        String decrypt = decryptWithPrivateKey(encrypt, base64PrivateKey);
+        System.out.println(decrypt);
+
+        // 使用私钥加密
+        encrypt = encryptWithPrivateKey(data, base64PrivateKey);
+        System.out.println(encrypt);
+
+        // 使用公钥解密
+        decrypt = decryptWithPublicKey(encrypt, base64PublicKey);
         System.out.println(decrypt);
     }
 }
