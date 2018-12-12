@@ -19,52 +19,6 @@ public class RsaUtil {
     private static Logger logger = LoggerFactory.getLogger(RsaUtil.class);
 
     /**
-     * 使用公钥加密
-     */
-    public static String encryptWithPublicKey(String data, String base64PublicKey) {
-        if (data == null || data.length() == 0 || base64PublicKey == null || base64PublicKey.length() == 0) {
-            return null;
-        }
-
-        PublicKey publicKey = getPublicKey(base64PublicKey);
-
-        if (publicKey == null) {
-            return null;
-        }
-
-        byte[] bytes = encrypt(data.getBytes(StandardCharsets.UTF_8), publicKey);
-
-        if (bytes == null || bytes.length == 0) {
-            return null;
-        }
-
-        return Base64Util.encode(bytes);
-    }
-
-    /**
-     * 使用私钥加密
-     */
-    public static String encryptWithPrivateKey(String data, String base64PrivateKey) {
-        if (data == null || data.length() == 0 || base64PrivateKey == null || base64PrivateKey.length() == 0) {
-            return null;
-        }
-
-        PrivateKey privateKey = getPrivateKey(base64PrivateKey);
-
-        if (privateKey == null) {
-            return null;
-        }
-
-        byte[] bytes = encrypt(data.getBytes(StandardCharsets.UTF_8), privateKey);
-
-        if (bytes == null || bytes.length == 0) {
-            return null;
-        }
-
-        return Base64Util.encode(bytes);
-    }
-
-    /**
      * 加密
      */
     public static byte[] encrypt(byte[] data, Key key) {
@@ -80,52 +34,6 @@ public class RsaUtil {
             logger.error("encrypt error", e);
             return null;
         }
-    }
-
-    /**
-     * 使用公钥解密
-     */
-    public static String decryptWithPublicKey(String data, String base64PublicKey) {
-        if (data == null || data.length() == 0 || base64PublicKey == null || base64PublicKey.length() == 0) {
-            return null;
-        }
-
-        PublicKey publicKey = getPublicKey(base64PublicKey);
-
-        if (publicKey == null) {
-            return null;
-        }
-
-        byte[] bytes = decrypt(Base64Util.decode(data), publicKey);
-
-        if (bytes == null || bytes.length == 0) {
-            return null;
-        }
-
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * 使用私钥解密
-     */
-    public static String decryptWithPrivateKey(String data, String base64PrivateKey) {
-        if (data == null || data.length() == 0 || base64PrivateKey == null || base64PrivateKey.length() == 0) {
-            return null;
-        }
-
-        PrivateKey privateKey = getPrivateKey(base64PrivateKey);
-
-        if (privateKey == null) {
-            return null;
-        }
-
-        byte[] bytes = decrypt(Base64Util.decode(data), privateKey);
-
-        if (bytes == null || bytes.length == 0) {
-            return null;
-        }
-
-        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     /**
@@ -149,7 +57,7 @@ public class RsaUtil {
     /**
      * 获取公钥
      */
-    private static PublicKey getPublicKey(String base64PublicKey) {
+    public static PublicKey getPublicKey(String base64PublicKey) {
         try {
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64Util.decode(base64PublicKey));
 
@@ -164,7 +72,7 @@ public class RsaUtil {
     /**
      * 获取私钥
      */
-    private static PrivateKey getPrivateKey(String base64PrivateKey) {
+    public static PrivateKey getPrivateKey(String base64PrivateKey) {
         try {
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64Util.decode(base64PrivateKey));
 
@@ -251,22 +159,28 @@ public class RsaUtil {
                 "3KCmURraCCqjYWx9rRJa03Y4ZfQdchfCzXoYLWSZIuQvPLnVidLVc7KLdm0nwYaac94Rakj5TSLG\n" +
                 "SD/5IEf+\n";
 
-        String data = "hello world";
+        // 获取公私密钥
+        PublicKey publicKey = getPublicKey(base64PublicKey);
+        PrivateKey privateKey = getPrivateKey(base64PrivateKey);
+
+        byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
 
         // 使用公钥加密
-        String encrypt = encryptWithPublicKey(data, base64PublicKey);
-        System.out.println(encrypt);
+        byte[] encryptBytes = encrypt(data, publicKey);
+        System.out.println(HexUtil.toHexString(encryptBytes));
+        System.out.println(Base64Util.encode(encryptBytes));
 
         // 使用私钥解密
-        String decrypt = decryptWithPrivateKey(encrypt, base64PrivateKey);
-        System.out.println(decrypt);
+        byte[] decryptBytes = decrypt(encryptBytes, privateKey);
+        System.out.println(new String(decryptBytes, StandardCharsets.UTF_8));
 
         // 使用私钥加密
-        encrypt = encryptWithPrivateKey(data, base64PrivateKey);
-        System.out.println(encrypt);
+        encryptBytes = encrypt(data, privateKey);
+        System.out.println(HexUtil.toHexString(encryptBytes));
+        System.out.println(Base64Util.encode(encryptBytes));
 
         // 使用公钥解密
-        decrypt = decryptWithPublicKey(encrypt, base64PublicKey);
-        System.out.println(decrypt);
+        decryptBytes = decrypt(encryptBytes, publicKey);
+        System.out.println(new String(decryptBytes, StandardCharsets.UTF_8));
     }
 }

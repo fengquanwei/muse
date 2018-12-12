@@ -17,33 +17,6 @@ public class Md5Util {
     private static Logger logger = LoggerFactory.getLogger(Md5Util.class);
 
     /**
-     * MD5 摘要（转为 16 进制，使用小写字母 a-e）
-     */
-    public static String md5ToString(String message) {
-        if (message == null || message.length() == 0) {
-            return null;
-        }
-
-        byte[] bytes = md5(message.getBytes(StandardCharsets.UTF_8));
-        if (bytes == null || bytes.length == 0) {
-            return null;
-        }
-
-        StringBuilder result = new StringBuilder();
-        for (byte b : bytes) {
-            int n = b & 0xff;
-            String h = Integer.toHexString(n);
-            if (h.length() == 1) {
-                result.append("0" + h);
-            } else {
-                result.append(h);
-            }
-        }
-
-        return result.toString();
-    }
-
-    /**
      * MD5 摘要
      */
     public static byte[] md5(byte[] message) {
@@ -65,7 +38,11 @@ public class Md5Util {
      * 测试
      */
     public static void main(String[] args) {
-        String message = "hello world";
-        System.out.println(md5ToString(message));
+        byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
+
+        byte[] md5Bytes = md5(data);
+
+        System.out.println(HexUtil.toHexString(md5Bytes));
+        System.out.println(Base64Util.encode(md5Bytes));
     }
 }

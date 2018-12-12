@@ -14,26 +14,14 @@ public class XxTeaUtil {
     /**
      * XXTea 加密
      */
-    public static String encryptToString(String data, String key) {
-        if (data == null || data.length() == 0 || key == null || key.length() == 0) {
+    public static byte[] encrypt(byte[] data, byte[] key) {
+        if (data == null || data.length == 0 || key == null || key.length == 0) {
             return null;
         }
 
-        byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-
-        byte[] bytes = toByteArray(encrypt(toIntArray(dataBytes, true), toIntArray(fixKey(keyBytes), false)), false);
-
-        if (bytes == null || bytes.length == 0) {
-            return null;
-        }
-
-        return Base64Util.encode(bytes);
+        return toByteArray(encrypt(toIntArray(data, true), toIntArray(fixKey(key), false)), false);
     }
 
-    /**
-     * XXTea 加密
-     */
     private static int[] encrypt(int[] data, int[] key) {
         int n = data.length - 1;
 
@@ -61,26 +49,14 @@ public class XxTeaUtil {
     /**
      * XXTea 解密
      */
-    public static String decryptToString(String data, String key) {
-        if (data == null || data.length() == 0 || key == null || key.length() == 0) {
+    public static byte[] decrypt(byte[] data, byte[] key) {
+        if (data == null || data.length == 0 || key == null || key.length == 0) {
             return null;
         }
 
-        byte[] dataBytes = Base64Util.decode(data);
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-
-        byte[] bytes = toByteArray(decrypt(toIntArray(dataBytes, false), toIntArray(fixKey(keyBytes), false)), true);
-
-        if (bytes == null || bytes.length == 0) {
-            return null;
-        }
-
-        return new String(bytes, StandardCharsets.UTF_8);
+        return toByteArray(decrypt(toIntArray(data, false), toIntArray(fixKey(key), false)), true);
     }
 
-    /**
-     * XXTea 解密
-     */
     private static int[] decrypt(int[] data, int[] key) {
         if (data == null || data.length == 0 || key == null || key.length == 0) {
             return null;
@@ -186,13 +162,14 @@ public class XxTeaUtil {
      * 测试
      */
     public static void main(String[] args) {
-        String data = "hello world";
-        String key = "123456";
+        byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
+        byte[] key = "123456".getBytes(StandardCharsets.UTF_8);
 
-        String encrypt = encryptToString(data, key);
-        System.out.println(encrypt);
+        byte[] encryptBytes = encrypt(data, key);
+        System.out.println(HexUtil.toHexString(encryptBytes));
+        System.out.println(Base64Util.encode(encryptBytes));
 
-        String decrypt = decryptToString(encrypt, key);
-        System.out.println(decrypt);
+        byte[] decryptBytes = decrypt(encryptBytes, key);
+        System.out.println(new String(decryptBytes, StandardCharsets.UTF_8));
     }
 }

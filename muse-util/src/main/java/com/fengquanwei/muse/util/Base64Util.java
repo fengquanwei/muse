@@ -20,17 +20,6 @@ public class Base64Util {
     /**
      * BASE64 编码
      */
-    public static String encode(String data) {
-        if (data == null || data.length() == 0) {
-            return null;
-        }
-
-        return encode(data.getBytes(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * BASE64 编码
-     */
     public static String encode(byte[] data) {
         if (data == null || data.length == 0) {
             return null;
@@ -55,17 +44,6 @@ public class Base64Util {
     /**
      * BASE64 解码
      */
-    public static String decodeToString(String data) {
-        if (data == null || data.length() == 0) {
-            return null;
-        }
-
-        return new String(decode(data), StandardCharsets.UTF_8);
-    }
-
-    /**
-     * BASE64 解码
-     */
     public static byte[] decode(String data) {
         if (data == null || data.length() == 0) {
             return null;
@@ -84,14 +62,14 @@ public class Base64Util {
      * 测试
      */
     public static void main(String[] args) {
-        String data = "hello world";
+        byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
 
         // 编码
-        String encode = encode(data);
-        System.out.println(encode);
+        String encodeString = encode(data);
+        System.out.println(encodeString);
 
         // 解码
-        String decode = decodeToString(encode);
-        System.out.println(decode);
+        byte[] decodeBytes = decode(encodeString);
+        System.out.println(new String(decodeBytes, StandardCharsets.UTF_8));
     }
 }
