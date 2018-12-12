@@ -41,6 +41,6 @@ public class StringUtil {
      * 测试
      */
     public static void main(String[] args) {
-        System.out.println(calculateCharacterLength("你好；hello, world"));
+        System.out.println(calculateCharacterLength("hello world"));
     }
 }

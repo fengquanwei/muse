@@ -81,7 +81,7 @@ public class Base64Util {
      * 测试
      */
     public static void main(String[] args) {
-        String data = "你好";
+        String data = "hello world";
 
         // 编码
         String encode = encode(data);
