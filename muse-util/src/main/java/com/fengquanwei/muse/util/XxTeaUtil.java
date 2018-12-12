@@ -19,35 +19,16 @@ public class XxTeaUtil {
             return null;
         }
 
-        byte[] bytes = encrypt(data, key);
+        byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+
+        byte[] bytes = toByteArray(encrypt(toIntArray(dataBytes, true), toIntArray(fixKey(keyBytes), false)), false);
 
         if (bytes == null || bytes.length == 0) {
             return null;
         }
 
         return Base64Util.encode(bytes);
-    }
-
-    /**
-     * XXTea 加密
-     */
-    public static byte[] encrypt(String data, String key) {
-        if (data == null || data.length() == 0 || key == null || key.length() == 0) {
-            return null;
-        }
-
-        return encrypt(data.getBytes(StandardCharsets.UTF_8), key.getBytes(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * XXTea 加密
-     */
-    public static byte[] encrypt(byte[] data, byte[] key) {
-        if (data == null || data.length == 0 || key == null || key.length == 0) {
-            return null;
-        }
-
-        return toByteArray(encrypt(toIntArray(data, true), toIntArray(fixKey(key), false)), false);
     }
 
     /**
@@ -85,35 +66,16 @@ public class XxTeaUtil {
             return null;
         }
 
-        byte[] bytes = decrypt(data, key);
+        byte[] dataBytes = Base64Util.decode(data);
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+
+        byte[] bytes = toByteArray(decrypt(toIntArray(dataBytes, false), toIntArray(fixKey(keyBytes), false)), true);
 
         if (bytes == null || bytes.length == 0) {
             return null;
         }
 
         return new String(bytes, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * XXTea 解密
-     */
-    public static byte[] decrypt(String data, String key) {
-        if (data == null || data.length() == 0 || key == null || key.length() == 0) {
-            return null;
-        }
-
-        return decrypt(Base64Util.decode(data), key.getBytes(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * XXTea 解密
-     */
-    public static byte[] decrypt(byte[] data, byte[] key) {
-        if (data == null || data.length == 0 || key == null || key.length == 0) {
-            return null;
-        }
-
-        return toByteArray(decrypt(toIntArray(data, false), toIntArray(fixKey(key), false)), true);
     }
 
     /**

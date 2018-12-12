@@ -19,7 +19,7 @@ public class Md5Util {
             return null;
         }
 
-        byte[] bytes = md5(message);
+        byte[] bytes = md5(message.getBytes(StandardCharsets.UTF_8));
         if (bytes == null || bytes.length == 0) {
             return null;
         }
@@ -36,17 +36,6 @@ public class Md5Util {
         }
 
         return result.toString();
-    }
-
-    /**
-     * MD5 摘要
-     */
-    public static byte[] md5(String message) {
-        if (message == null || message.length() == 0) {
-            return null;
-        }
-
-        return md5(message.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

@@ -74,13 +74,14 @@ public class Base64Util {
             e.printStackTrace();
             return null;
         }
+
     }
 
     /**
      * 测试
      */
     public static void main(String[] args) {
-        String data = "hello world";
+        String data = "你好";
 
         // 编码
         String encode = encode(data);

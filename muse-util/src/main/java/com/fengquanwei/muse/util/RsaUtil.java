@@ -97,6 +97,23 @@ public class RsaUtil {
     /**
      * 使用公钥加密
      */
+    public static String encryptToString(String data, PublicKey publicKey) {
+        if (data == null || data.length() == 0 || publicKey == null) {
+            return null;
+        }
+
+        byte[] bytes = encrypt(data.getBytes(StandardCharsets.UTF_8), publicKey);
+
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+
+        return Base64Util.encode(bytes);
+    }
+
+    /**
+     * 使用公钥加密
+     */
     public static byte[] encrypt(byte[] data, PublicKey publicKey) {
         if (data == null || data.length == 0 || publicKey == null) {
             return null;
@@ -110,6 +127,23 @@ public class RsaUtil {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 使用私钥解密
+     */
+    public static String decryptToString(String data, PrivateKey privateKey) {
+        if (data == null || data.length() == 0 || privateKey == null) {
+            return null;
+        }
+
+        byte[] bytes = decrypt(Base64Util.decode(data), privateKey);
+
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     /**
@@ -162,10 +196,11 @@ public class RsaUtil {
         String data = "hello world";
 
         // 使用公钥加密
-        byte[] encrypt = encrypt(data.getBytes(StandardCharsets.UTF_8), publicKey);
+        String encrypt = encryptToString(data, publicKey);
+        System.out.println(encrypt);
 
         // 使用私钥解密
-        byte[] decrypt = decrypt(encrypt, privateKey);
-        System.out.println(new String(decrypt, StandardCharsets.UTF_8));
+        String decrypt = decryptToString(encrypt, privateKey);
+        System.out.println(decrypt);
     }
 }
