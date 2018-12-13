@@ -166,7 +166,7 @@ public class XxTeaUtil {
         byte[] key = "123456".getBytes(StandardCharsets.UTF_8);
 
         byte[] encryptBytes = encrypt(data, key);
-        System.out.println(HexUtil.toHexString(encryptBytes));
+        System.out.println(HexUtil.byteToHex(encryptBytes));
         System.out.println(Base64Util.encode(encryptBytes));
 
         byte[] decryptBytes = decrypt(encryptBytes, key);

@@ -42,7 +42,7 @@ public class Md5Util {
 
         byte[] md5Bytes = md5(data);
 
-        System.out.println(HexUtil.toHexString(md5Bytes));
+        System.out.println(HexUtil.byteToHex(md5Bytes));
         System.out.println(Base64Util.encode(md5Bytes));
     }
 }

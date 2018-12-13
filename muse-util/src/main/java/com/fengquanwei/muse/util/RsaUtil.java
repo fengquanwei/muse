@@ -167,7 +167,7 @@ public class RsaUtil {
 
         // 使用公钥加密
         byte[] encryptBytes = encrypt(data, publicKey);
-        System.out.println(HexUtil.toHexString(encryptBytes));
+        System.out.println(HexUtil.byteToHex(encryptBytes));
         System.out.println(Base64Util.encode(encryptBytes));
 
         // 使用私钥解密
@@ -176,7 +176,7 @@ public class RsaUtil {
 
         // 使用私钥加密
         encryptBytes = encrypt(data, privateKey);
-        System.out.println(HexUtil.toHexString(encryptBytes));
+        System.out.println(HexUtil.byteToHex(encryptBytes));
         System.out.println(Base64Util.encode(encryptBytes));
 
         // 使用公钥解密
