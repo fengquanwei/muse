@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -26,15 +27,50 @@ public class RsaUtil {
             return null;
         }
 
-        // 1024 位密钥最多支持 117 字节明文加密
+        // 1024 位密钥最多支持 117 字节明文加密，超过则分段加密
         if (data.length > 117) {
-            return null;
+            return segmentEncrypt(data, key);
         }
 
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return cipher.doFinal(data);
+        } catch (Exception e) {
+            logger.error("encrypt error", e);
+            return null;
+        }
+    }
+
+    /**
+     * 分段加密
+     */
+    public static byte[] segmentEncrypt(byte[] data, Key key) {
+        if (data == null || data.length == 0 || key == null) {
+            return null;
+        }
+
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            int length = data.length;
+            int offset = 0;
+            byte[] cache;
+
+            while (length > offset) {
+                if (length - offset > 117) {
+                    cache = cipher.doFinal(data, offset, 117);
+                } else {
+                    cache = cipher.doFinal(data, offset, length - offset);
+                }
+                output.write(cache, 0, cache.length);
+
+                offset += 117;
+            }
+
+            return output.toByteArray();
         } catch (Exception e) {
             logger.error("encrypt error", e);
             return null;
@@ -49,15 +85,50 @@ public class RsaUtil {
             return null;
         }
 
-        // 1024 位密钥最多支持 128 字节密文加密
+        // 1024 位密钥最多支持 128 字节密文解密，超过则分段解密
         if (data.length > 128) {
-            return null;
+            return segmentDecrypt(data, key);
         }
 
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, key);
             return cipher.doFinal(data);
+        } catch (Exception e) {
+            logger.error("decrypt error", e);
+            return null;
+        }
+    }
+
+    /**
+     * 分段解密
+     */
+    public static byte[] segmentDecrypt(byte[] data, Key key) {
+        if (data == null || data.length == 0 || key == null) {
+            return null;
+        }
+
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.DECRYPT_MODE, key);
+
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            int length = data.length;
+            int offset = 0;
+            byte[] cache;
+
+            while (length > offset) {
+                if (length - offset > 128) {
+                    cache = cipher.doFinal(data, offset, 128);
+                } else {
+                    cache = cipher.doFinal(data, offset, length - offset);
+                }
+                output.write(cache, 0, cache.length);
+
+                offset += 128;
+            }
+
+            return output.toByteArray();
         } catch (Exception e) {
             logger.error("decrypt error", e);
             return null;
@@ -203,7 +274,7 @@ public class RsaUtil {
         PublicKey publicKey = getPublicKey(base64PublicKey);
         PrivateKey privateKey = getPrivateKey(base64PrivateKey);
 
-        byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
+        byte[] data = "一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九".getBytes(StandardCharsets.UTF_8);
 
         // 使用公钥加密
         byte[] encryptBytes = encrypt(data, publicKey);
