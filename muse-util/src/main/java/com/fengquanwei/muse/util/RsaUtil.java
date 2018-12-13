@@ -26,6 +26,11 @@ public class RsaUtil {
             return null;
         }
 
+        // 1024 位密钥最多支持 117 字节明文加密
+        if (data.length > 117) {
+            return null;
+        }
+
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -41,6 +46,11 @@ public class RsaUtil {
      */
     public static byte[] decrypt(byte[] data, Key key) {
         if (data == null || data.length == 0 || key == null) {
+            return null;
+        }
+
+        // 1024 位密钥最多支持 128 字节密文加密
+        if (data.length > 128) {
             return null;
         }
 
