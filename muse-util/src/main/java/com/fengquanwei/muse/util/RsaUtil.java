@@ -65,6 +65,36 @@ public class RsaUtil {
     }
 
     /**
+     * 使用私钥签名
+     */
+    public static byte[] sign(byte[] data, PrivateKey privateKey) {
+        try {
+            Signature signature = Signature.getInstance("SHA1WithRSA");
+            signature.initSign(privateKey);
+            signature.update(data);
+            return signature.sign();
+        } catch (Exception e) {
+            logger.error("sign error", e);
+            return null;
+        }
+    }
+
+    /**
+     * 使用公钥验签
+     */
+    public static boolean verify(byte[] data, byte[] sign, PublicKey publicKey) {
+        try {
+            Signature signature = Signature.getInstance("SHA1WithRSA");
+            signature.initVerify(publicKey);
+            signature.update(data);
+            return signature.verify(sign);
+        } catch (Exception e) {
+            logger.error("verify error", e);
+            return false;
+        }
+    }
+
+    /**
      * 获取公钥
      */
     public static PublicKey getPublicKey(String base64PublicKey) {
@@ -192,5 +222,13 @@ public class RsaUtil {
         // 使用公钥解密
         decryptBytes = decrypt(encryptBytes, publicKey);
         System.out.println(new String(decryptBytes, StandardCharsets.UTF_8));
+
+        // 使用私钥签名
+        byte[] sign = sign(data, privateKey);
+        System.out.println(HexUtil.byteToHex(sign));
+
+        // 使用公钥验签
+        boolean verify = verify(data, sign, publicKey);
+        System.out.println(verify);
     }
 }
