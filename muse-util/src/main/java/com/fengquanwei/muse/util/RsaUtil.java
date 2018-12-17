@@ -138,7 +138,7 @@ public class RsaUtil {
     /**
      * 使用私钥签名
      */
-    public static byte[] sign(byte[] data, PrivateKey privateKey) {
+    public static byte[] signWithSha1(byte[] data, PrivateKey privateKey) {
         try {
             Signature signature = Signature.getInstance("SHA1WithRSA");
             signature.initSign(privateKey);
@@ -153,9 +153,39 @@ public class RsaUtil {
     /**
      * 使用公钥验签
      */
-    public static boolean verify(byte[] data, byte[] sign, PublicKey publicKey) {
+    public static boolean verifyWithSha1(byte[] data, byte[] sign, PublicKey publicKey) {
         try {
             Signature signature = Signature.getInstance("SHA1WithRSA");
+            signature.initVerify(publicKey);
+            signature.update(data);
+            return signature.verify(sign);
+        } catch (Exception e) {
+            logger.error("verify error", e);
+            return false;
+        }
+    }
+
+    /**
+     * 使用私钥签名
+     */
+    public static byte[] signWithMd5(byte[] data, PrivateKey privateKey) {
+        try {
+            Signature signature = Signature.getInstance("MD5withRSA");
+            signature.initSign(privateKey);
+            signature.update(data);
+            return signature.sign();
+        } catch (Exception e) {
+            logger.error("sign error", e);
+            return null;
+        }
+    }
+
+    /**
+     * 使用公钥验签
+     */
+    public static boolean verifyWithMd5(byte[] data, byte[] sign, PublicKey publicKey) {
+        try {
+            Signature signature = Signature.getInstance("MD5withRSA");
             signature.initVerify(publicKey);
             signature.update(data);
             return signature.verify(sign);
@@ -295,11 +325,19 @@ public class RsaUtil {
         System.out.println(new String(decryptBytes, StandardCharsets.UTF_8));
 
         // 使用私钥签名
-        byte[] sign = sign(data, privateKey);
+        byte[] sign = signWithSha1(data, privateKey);
         System.out.println(HexUtil.byteToHex(sign));
 
         // 使用公钥验签
-        boolean verify = verify(data, sign, publicKey);
+        boolean verify = verifyWithSha1(data, sign, publicKey);
+        System.out.println(verify);
+
+        // 使用私钥签名
+        sign = signWithMd5(data, privateKey);
+        System.out.println(HexUtil.byteToHex(sign));
+
+        // 使用公钥验签
+        verify = verifyWithMd5(data, sign, publicKey);
         System.out.println(verify);
     }
 }
