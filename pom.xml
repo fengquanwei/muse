@@ -10,9 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>muse-util</module>
-        <module>muse-test</module>
         <module>muse-springmvc</module>
-        <module>muse-web</module>
     </modules>
 
     <properties>
