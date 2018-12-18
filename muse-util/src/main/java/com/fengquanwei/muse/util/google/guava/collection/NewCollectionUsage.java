@@ -1,4 +1,4 @@
-package com.fengquanwei.muse.util.guava.collection;
+package com.fengquanwei.muse.util.google.guava.collection;
 
 import com.google.common.collect.*;
 

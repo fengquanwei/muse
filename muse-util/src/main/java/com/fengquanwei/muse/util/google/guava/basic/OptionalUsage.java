@@ -1,4 +1,4 @@
-package com.fengquanwei.muse.util.guava.basic;
+package com.fengquanwei.muse.util.google.guava.basic;
 
 import java.util.Optional;
 
