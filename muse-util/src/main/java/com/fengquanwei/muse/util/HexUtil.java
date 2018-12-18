@@ -58,10 +58,10 @@ public class HexUtil {
     public static void main(String[] args) {
         byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
 
-        String hexString = byteToHex(data);
+        String hexString = HexUtil.byteToHex(data);
         System.out.println(hexString);
 
-        byte[] bytes = hexToByte(hexString);
+        byte[] bytes = HexUtil.hexToByte(hexString);
         System.out.println(new String(bytes, StandardCharsets.UTF_8));
     }
 }

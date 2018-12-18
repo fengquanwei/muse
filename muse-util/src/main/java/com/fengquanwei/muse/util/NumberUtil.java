@@ -27,6 +27,6 @@ public class NumberUtil {
      * 测试
      */
     public static void main(String[] args) {
-        System.out.println(integerToBinary(123456));
+        System.out.println(NumberUtil.integerToBinary(123456));
     }
 }

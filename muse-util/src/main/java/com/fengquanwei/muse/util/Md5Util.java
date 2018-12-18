@@ -40,7 +40,7 @@ public class Md5Util {
     public static void main(String[] args) {
         byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
 
-        byte[] md5Bytes = md5(data);
+        byte[] md5Bytes = Md5Util.md5(data);
 
         System.out.println(HexUtil.byteToHex(md5Bytes));
         System.out.println(Base64Util.encode(md5Bytes));

@@ -281,7 +281,7 @@ public class RsaUtil {
      */
     public static void main(String[] args) {
         // 生成并打印公私密钥对
-//        generateAndPrintKeyPair();
+//        RsaUtil.generateAndPrintKeyPair();
 
         String base64PublicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDiT/ZH8UdeiKINaJtj37jk9Gu0+ILUez4qnE+C\n" +
                 "qKX4put3KUi8sH12zH5GG9TVy/avWxmqmMMQk3htGogW9zi6n2mclRVT8+eUTgSNK6yZbJokt9Fv\n" +
@@ -301,43 +301,43 @@ public class RsaUtil {
                 "hYMqUdiPAAc=\n";
 
         // 获取公私密钥
-        PublicKey publicKey = getPublicKey(base64PublicKey);
-        PrivateKey privateKey = getPrivateKey(base64PrivateKey);
+        PublicKey publicKey = RsaUtil.getPublicKey(base64PublicKey);
+        PrivateKey privateKey = RsaUtil.getPrivateKey(base64PrivateKey);
 
         byte[] data = "一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九".getBytes(StandardCharsets.UTF_8);
 
         // 使用公钥加密
-        byte[] encryptBytes = encrypt(data, publicKey);
+        byte[] encryptBytes = RsaUtil.encrypt(data, publicKey);
         System.out.println(HexUtil.byteToHex(encryptBytes));
         System.out.println(Base64Util.encode(encryptBytes));
 
         // 使用私钥解密
-        byte[] decryptBytes = decrypt(encryptBytes, privateKey);
+        byte[] decryptBytes = RsaUtil.decrypt(encryptBytes, privateKey);
         System.out.println(new String(decryptBytes, StandardCharsets.UTF_8));
 
         // 使用私钥加密
-        encryptBytes = encrypt(data, privateKey);
+        encryptBytes = RsaUtil.encrypt(data, privateKey);
         System.out.println(HexUtil.byteToHex(encryptBytes));
         System.out.println(Base64Util.encode(encryptBytes));
 
         // 使用公钥解密
-        decryptBytes = decrypt(encryptBytes, publicKey);
+        decryptBytes = RsaUtil.decrypt(encryptBytes, publicKey);
         System.out.println(new String(decryptBytes, StandardCharsets.UTF_8));
 
         // 使用私钥签名
-        byte[] sign = signWithSha1(data, privateKey);
+        byte[] sign = RsaUtil.signWithSha1(data, privateKey);
         System.out.println(HexUtil.byteToHex(sign));
 
         // 使用公钥验签
-        boolean verify = verifyWithSha1(data, sign, publicKey);
+        boolean verify = RsaUtil.verifyWithSha1(data, sign, publicKey);
         System.out.println(verify);
 
         // 使用私钥签名
-        sign = signWithMd5(data, privateKey);
+        sign = RsaUtil.signWithMd5(data, privateKey);
         System.out.println(HexUtil.byteToHex(sign));
 
         // 使用公钥验签
-        verify = verifyWithMd5(data, sign, publicKey);
+        verify = RsaUtil.verifyWithMd5(data, sign, publicKey);
         System.out.println(verify);
     }
 }

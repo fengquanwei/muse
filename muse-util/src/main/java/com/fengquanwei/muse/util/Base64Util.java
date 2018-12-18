@@ -53,11 +53,11 @@ public class Base64Util {
         byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
 
         // 编码
-        String encodeString = encode(data);
+        String encodeString = Base64Util.encode(data);
         System.out.println(encodeString);
 
         // 解码
-        byte[] decodeBytes = decode(encodeString);
+        byte[] decodeBytes = Base64Util.decode(encodeString);
         System.out.println(new String(decodeBytes, StandardCharsets.UTF_8));
     }
 }

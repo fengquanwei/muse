@@ -85,10 +85,10 @@ public class AesUtil {
         String data = "hello world";
         String key = "hello world";
 
-        String encrypt = encrypt(data, key);
+        String encrypt = AesUtil.encrypt(data, key);
         System.out.println(encrypt);
 
-        String decrypt = decrypt(encrypt, key);
+        String decrypt = AesUtil.decrypt(encrypt, key);
         System.out.println(decrypt);
     }
 }

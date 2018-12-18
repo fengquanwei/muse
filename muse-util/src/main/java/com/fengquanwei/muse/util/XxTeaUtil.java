@@ -165,11 +165,11 @@ public class XxTeaUtil {
         byte[] data = "hello world".getBytes(StandardCharsets.UTF_8);
         byte[] key = "123456".getBytes(StandardCharsets.UTF_8);
 
-        byte[] encryptBytes = encrypt(data, key);
+        byte[] encryptBytes = XxTeaUtil.encrypt(data, key);
         System.out.println(HexUtil.byteToHex(encryptBytes));
         System.out.println(Base64Util.encode(encryptBytes));
 
-        byte[] decryptBytes = decrypt(encryptBytes, key);
+        byte[] decryptBytes = XxTeaUtil.decrypt(encryptBytes, key);
         System.out.println(new String(decryptBytes, StandardCharsets.UTF_8));
     }
 }
