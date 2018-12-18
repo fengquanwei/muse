@@ -3,6 +3,7 @@
     <property name="appName" value="muse-util"/>
     <property name="logPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c{36} - %msg%n"/>
     <property name="maxHistory" value="15"/>
+    <property name="maxFileSize" value="200MB"/>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -14,8 +15,11 @@
     <appender name="all" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/opt/log/${appName}/all.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/log/${appName}/history/all.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>/opt/log/${appName}/history/all.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <MaxFileSize>${maxFileSize}</MaxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
             <pattern>${logPattern}</pattern>
@@ -30,8 +34,11 @@
         </filter>
         <file>/opt/log/${appName}/error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/log/${appName}/history/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>/opt/log/${appName}/history/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <MaxFileSize>${maxFileSize}</MaxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
             <pattern>${logPattern}</pattern>
