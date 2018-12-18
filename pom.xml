@@ -10,11 +10,26 @@
     <packaging>pom</packaging>
     <modules>
         <module>muse-util</module>
-        <module>muse-guava</module>
         <module>muse-test</module>
         <module>muse-springmvc</module>
         <module>muse-web</module>
     </modules>
 
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

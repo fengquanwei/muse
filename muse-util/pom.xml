@@ -12,11 +12,19 @@
     <artifactId>muse-util</artifactId>
 
     <properties>
+        <guava.version>27.0-jre</guava.version>
         <slf4j.version>1.7.9</slf4j.version>
         <logback.version>1.0.7</logback.version>
     </properties>
 
     <dependencies>
+        <!--guava-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
         <!--slf4j-->
         <dependency>
             <groupId>org.slf4j</groupId>
