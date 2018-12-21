@@ -45,7 +45,7 @@ public class RsaUtil {
     /**
      * 分段加密
      */
-    public static byte[] segmentEncrypt(byte[] data, Key key) {
+    private static byte[] segmentEncrypt(byte[] data, Key key) {
         if (data == null || data.length == 0 || key == null) {
             return null;
         }
@@ -103,7 +103,7 @@ public class RsaUtil {
     /**
      * 分段解密
      */
-    public static byte[] segmentDecrypt(byte[] data, Key key) {
+    private static byte[] segmentDecrypt(byte[] data, Key key) {
         if (data == null || data.length == 0 || key == null) {
             return null;
         }
