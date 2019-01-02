@@ -15,9 +15,9 @@
 
     <!--all appender-->
     <appender name="all" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>log/${appName}/all.log</file>
+        <file>logs/${appName}/all.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>log/${appName}/history/all.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/${appName}/history/all.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
             <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <MaxFileSize>${maxFileSize}</MaxFileSize>
@@ -35,9 +35,9 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-        <file>log/${appName}/error.log</file>
+        <file>logs/${appName}/error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>log/${appName}/history/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/${appName}/history/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxHistory>${maxHistory}</maxHistory>
             <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <MaxFileSize>${maxFileSize}</MaxFileSize>
@@ -49,7 +49,7 @@
     </appender>
 
     <!--common logger-->
-    <logger name="com.fengquanwei.muse.util" level="ALL" additivity="false">
+    <logger name="com.fengquanwei.muse.util" level="INFO" additivity="false">
         <appender-ref ref="console"/>
         <appender-ref ref="all"/>
         <appender-ref ref="error"/>
