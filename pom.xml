@@ -11,6 +11,7 @@
     <modules>
         <module>muse-util</module>
         <module>muse-springmvc</module>
+        <module>muse-zookeeper</module>
     </modules>
 
     <properties>
