@@ -23,13 +23,15 @@ public class ClientUsage {
      * 客户端用法
      */
     public static void main(String[] args) {
-        // 创建会话
+        logger.info("========== 创建会话 ==========");
         ZooKeeper zooKeeper = createSession();
 
-        // 复用会话
-        reuseSession(zooKeeper);
+        logger.info("========== 复用会话 ==========");
+        reuseSession(1, "wrongPasswd".getBytes());
 
-        // 休眠一会
+        logger.info("========== 复用会话 ==========");
+        reuseSession(zooKeeper.getSessionId(), zooKeeper.getSessionPasswd());
+
         sleep(5000);
     }
 
@@ -74,21 +76,20 @@ public class ClientUsage {
     /**
      * 复用会话
      */
-    private static void reuseSession(ZooKeeper zooKeeper) {
+    private static ZooKeeper reuseSession(long sessionId, byte[] sessionPasswd) {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
         String connectString = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183";
         int sessionTimeout = 5000;
         MyWatcher watcher = new MyWatcher(countDownLatch);
-        long sessionId = zooKeeper.getSessionId();
-        byte[] sessionPasswd = zooKeeper.getSessionPasswd();
 
         // 创建 zk 实例
+        ZooKeeper zooKeeper;
         try {
             zooKeeper = new ZooKeeper(connectString, sessionTimeout, watcher, sessionId, sessionPasswd);
         } catch (IOException e) {
             logger.error("connect zookeeper error, connectString: {}, sessionTimeout: {}, watcher: {}, sessionId: {}, sessionPasswd: {}", connectString, sessionTimeout, watcher, sessionId, sessionPasswd, e);
-            return;
+            return null;
         }
 
         // 等待 zk 连接
@@ -97,14 +98,16 @@ public class ClientUsage {
             reached = countDownLatch.await(6000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             logger.error("count down latch await error", e);
-            return;
+            return null;
         }
 
         // 打印连接状态
         if (reached) {
             logger.info("connect zookeeper success");
+            return zooKeeper;
         } else {
             logger.error("connect zookeeper timeout");
+            return null;
         }
     }
 
@@ -131,7 +134,7 @@ public class ClientUsage {
 
         @Override
         public void process(WatchedEvent watchedEvent) {
-            logger.info("receive watch event: {}", watchedEvent);
+            logger.info("{} receive watch event: {}", this, watchedEvent);
             if (Event.KeeperState.SyncConnected == watchedEvent.getState()) {
                 countDownLatch.countDown();
             }
