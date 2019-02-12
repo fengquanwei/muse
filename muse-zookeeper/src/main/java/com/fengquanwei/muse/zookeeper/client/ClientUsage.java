@@ -53,6 +53,14 @@ public class ClientUsage {
         getData();
         sleep(1000);
 
+        logger.info("========== 更新数据 ==========");
+        setData();
+        sleep(1000);
+
+        logger.info("========== 检测节点是否存在 ==========");
+        exists();
+        sleep(1000);
+
         logger.info("========== 删除节点 ==========");
         deleteNode();
         sleep(1000);
@@ -208,12 +216,59 @@ public class ClientUsage {
     }
 
     /**
+     * 更新数据
+     */
+    private static void setData() {
+        String path = "/t";
+
+        // 同步更新数据
+        try {
+            Stat stat1 = zooKeeper.setData(path, "test1".getBytes(), -1);
+            logger.info("set data, path: {}, stat: {}", path, stat1);
+
+            Stat stat2 = zooKeeper.setData(path, "test2".getBytes(), stat1.getVersion());
+            logger.info("set data, path: {}, stat: {}", path, stat2);
+        } catch (Exception e) {
+            logger.error("set data error, path: {}", path, e);
+        }
+
+        // 异步更新数据
+        zooKeeper.setData(path, "test3".getBytes(), -1, new MyStatCallback(), "set data");
+    }
+
+    /**
+     * 检测节点是否存在
+     */
+    private static void exists() {
+        String path = "/a";
+
+        // 同步检测节点是否存在
+        try {
+            // 检测节点是否存在
+            Stat stat = zooKeeper.exists(path, true);
+            logger.info("check exists, path: {}, stat: {}", path, stat);
+
+            // 创建节点
+            zooKeeper.create(path, "A".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+
+            // 更新节点
+            zooKeeper.setData(path, "a".getBytes(), -1);
+            sleep(100);
+
+            // 删除节点
+            zooKeeper.delete(path, -1);
+        } catch (Exception e) {
+            logger.error("check exists error, path: {}", path, e);
+        }
+    }
+
+    /**
      * 删除节点
      */
     private static void deleteNode() {
         try {
             String path = "/t";
-            zooKeeper.delete(path, 1);
+            zooKeeper.delete(path, -1);
             logger.info("delete node success, path: {}", path);
         } catch (Exception e) {
             logger.error("delete node error", e);
@@ -251,7 +306,44 @@ public class ClientUsage {
             if (Event.KeeperState.SyncConnected == watchedEvent.getState()) {
                 // 建立连接
                 if (Event.EventType.None == type && null == path) {
+                    logger.info("【{}】sync connected", this);
                     countDownLatch.countDown();
+                    return;
+                }
+
+                // 节点创建
+                if (Event.EventType.NodeCreated == type) {
+                    logger.info("【{}】node created, path: {}", this, path);
+
+                    try {
+                        zooKeeper.exists(path, true);
+                    } catch (Exception e) {
+                        logger.error("【{}】check exists error, path: {}", this, path, e);
+                    }
+                    return;
+                }
+
+                // 节点删除
+                if (Event.EventType.NodeDeleted == type) {
+                    logger.info("【{}】node deleted, path: {}", this, path);
+
+                    try {
+                        zooKeeper.exists(path, true);
+                    } catch (Exception e) {
+                        logger.error("【{}】check exists error, path: {}", this, path, e);
+                    }
+                    return;
+                }
+
+                // 节点数据变更
+                if (Event.EventType.NodeDataChanged == type) {
+                    Stat stat = new Stat();
+                    try {
+                        byte[] data = zooKeeper.getData(path, true, stat);
+                        logger.info("【{}】node data changed, path: {}, data: {}, stat: {}", this, path, new String(data), stat);
+                    } catch (Exception e) {
+                        logger.error("【{}】get data error, path: {}", this, path, e);
+                    }
                     return;
                 }
 
@@ -259,20 +351,9 @@ public class ClientUsage {
                 if (Event.EventType.NodeChildrenChanged == type) {
                     try {
                         List<String> children = zooKeeper.getChildren(path, true);
-                        logger.info("【{}】get children, path: {}, children: {}", this, path, children);
+                        logger.info("【{}】node children changed, path: {}, children: {}", this, path, children);
                     } catch (Exception e) {
                         logger.error("【{}】get children error", this, e);
-                    }
-                }
-
-                // 数据变更
-                if (Event.EventType.NodeDataChanged == type) {
-                    Stat stat = new Stat();
-                    try {
-                        byte[] data = zooKeeper.getData(path, true, stat);
-                        logger.info("【{}】get data, path: {}, data: {}, stat: {}", this, path, new String(data), stat);
-                    } catch (Exception e) {
-                        logger.error("【{}】get data error, path: {}", this, path, e);
                     }
                 }
             }
@@ -307,6 +388,16 @@ public class ClientUsage {
         @Override
         public void processResult(int rc, String path, Object context, byte[] data, Stat stat) {
             logger.info("【{}】receive result, rc: {}, path: {}, context: {}, data: {}, stat: {}", this, rc, path, context, new String(data), stat);
+        }
+    }
+
+    /**
+     * My StatCallback
+     */
+    private static class MyStatCallback implements AsyncCallback.StatCallback {
+        @Override
+        public void processResult(int rc, String path, Object context, Stat stat) {
+            logger.info("【{}】receive result, rc: {}, path: {}, context: {}, stat: {}", this, rc, path, context, stat);
         }
     }
 
