@@ -64,6 +64,10 @@ public class ClientUsage {
         logger.info("========== 删除节点 ==========");
         deleteNode();
         sleep(1000);
+
+        logger.info("========== 权限控制 ==========");
+        auth();
+        sleep(1000);
     }
 
     /**
@@ -244,21 +248,32 @@ public class ClientUsage {
 
         // 同步检测节点是否存在
         try {
-            // 检测节点是否存在
             Stat stat = zooKeeper.exists(path, true);
             logger.info("check exists, path: {}, stat: {}", path, stat);
-
-            // 创建节点
-            zooKeeper.create(path, "A".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-
-            // 更新节点
-            zooKeeper.setData(path, "a".getBytes(), -1);
-            sleep(100);
-
-            // 删除节点
-            zooKeeper.delete(path, -1);
         } catch (Exception e) {
             logger.error("check exists error, path: {}", path, e);
+        }
+
+        // 创建节点
+        try {
+            zooKeeper.create(path, "A".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+        } catch (Exception e) {
+            logger.error("create node error, path: {}", path, e);
+        }
+
+        // 更新节点
+        try {
+            zooKeeper.setData(path, "a".getBytes(), -1);
+        } catch (Exception e) {
+            logger.error("set data error, path: {}", path, e);
+        }
+        sleep(100);
+
+        // 删除节点
+        try {
+            zooKeeper.delete(path, -1);
+        } catch (Exception e) {
+            logger.error("delete node error, path: {}", path, e);
         }
     }
 
@@ -272,6 +287,31 @@ public class ClientUsage {
             logger.info("delete node success, path: {}", path);
         } catch (Exception e) {
             logger.error("delete node error", e);
+        }
+    }
+
+    /**
+     * 权限控制
+     */
+    private static void auth() {
+        // 添加权限信息
+        zooKeeper.addAuthInfo("digest", "foo:true".getBytes());
+
+        String path = "/b";
+
+        // 创建节点
+        try {
+            zooKeeper.create(path, "B".getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL, CreateMode.EPHEMERAL);
+        } catch (Exception e) {
+            logger.error("create node error, path: {}", path, e);
+        }
+
+        // 使用无权限的 ZK 会话访问节点
+        createSession();
+        try {
+            zooKeeper.getData(path, false, null);
+        } catch (Exception e) {
+            logger.info("get data error, path: {}, exception: {}", path, e.toString());
         }
     }
 
