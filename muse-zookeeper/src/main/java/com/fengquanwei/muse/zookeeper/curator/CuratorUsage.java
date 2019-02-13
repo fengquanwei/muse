@@ -4,6 +4,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,27 @@ public class CuratorUsage {
 
         client.create().forPath(path5);
         logger.info("create node, path: {}", path5);
+
+        logger.info("========== 读取数据 ==========");
+
+        // 读取节点数据
+        byte[] data2 = client.getData().forPath(path2);
+        logger.info("get data, path: {}, data: {}", path2, new String(data2));
+
+        // 读取节点数据同时获取 stat
+        Stat stat3 = new Stat();
+        byte[] data3 = client.getData().storingStatIn(stat3).forPath(path3);
+        logger.info("get data, path: {}, data: {}, stat: {}", path3, new String(data3), stat3);
+
+        logger.info("========== 更新数据 ==========");
+
+        // 更新数据
+        Stat stat22 = client.setData().forPath(path2, "BB".getBytes());
+        logger.info("set data, path: {}, data: {}, stat: {}", path2, new String(client.getData().forPath(path2)), stat22);
+
+        // 指定版本更新
+        Stat stat222 = client.setData().withVersion(stat22.getVersion()).forPath(path2, "BBB".getBytes());
+        logger.info("set data, path: {}, data: {}, stat: {}", path2, new String(client.getData().forPath(path2)), stat222);
 
         logger.info("========== 删除节点 ==========");
 
