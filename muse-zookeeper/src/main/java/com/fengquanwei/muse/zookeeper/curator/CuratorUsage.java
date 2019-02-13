@@ -2,11 +2,16 @@ package com.fengquanwei.muse.zookeeper.curator;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.api.BackgroundCallback;
+import org.apache.curator.framework.api.CuratorEvent;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Curator 用法
@@ -113,5 +118,28 @@ public class CuratorUsage {
         // 强制删除节点
         client.delete().guaranteed().forPath(path5);
         logger.info("delete node, path: {}", path5);
+
+        logger.info("========== 异步接口 ==========");
+
+        // 异步创建节点，使用默认线程处理异步通知
+        client.create().withMode(CreateMode.EPHEMERAL).inBackground(new BackgroundCallback() {
+            @Override
+            public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
+                logger.info("【{}】process result, curatorEvent: {}", Thread.currentThread().getName(), curatorEvent);
+            }
+        }).forPath("/f", "F".getBytes());
+
+        // 异步创建节点，使用自定义线程池处理异步通知
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        client.create().withMode(CreateMode.EPHEMERAL).inBackground(new BackgroundCallback() {
+            @Override
+            public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
+                logger.info("【{}】process result, curatorEvent: {}", Thread.currentThread().getName(), curatorEvent);
+            }
+        }, executorService).forPath("/f", "F".getBytes());
+
+        Thread.sleep(3000);
+
+        executorService.shutdown();
     }
 }
