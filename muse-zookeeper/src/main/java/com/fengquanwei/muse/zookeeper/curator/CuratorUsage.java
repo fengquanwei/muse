@@ -10,6 +10,7 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -121,11 +122,14 @@ public class CuratorUsage {
 
         logger.info("========== 异步接口 ==========");
 
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+
         // 异步创建节点，使用默认线程处理异步通知
         client.create().withMode(CreateMode.EPHEMERAL).inBackground(new BackgroundCallback() {
             @Override
             public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
                 logger.info("【{}】process result, curatorEvent: {}", Thread.currentThread().getName(), curatorEvent);
+                countDownLatch.countDown();
             }
         }).forPath("/f", "F".getBytes());
 
@@ -135,11 +139,11 @@ public class CuratorUsage {
             @Override
             public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
                 logger.info("【{}】process result, curatorEvent: {}", Thread.currentThread().getName(), curatorEvent);
+                countDownLatch.countDown();
             }
         }, executorService).forPath("/f", "F".getBytes());
 
-        Thread.sleep(3000);
-
+        countDownLatch.await();
         executorService.shutdown();
     }
 }
