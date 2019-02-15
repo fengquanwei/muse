@@ -144,7 +144,10 @@ public class RecipesUsage {
         leaderSelector3.autoRequeue();
         leaderSelector3.start();
 
-        Thread.sleep(15000);
+        Thread.sleep(10000);
+        leaderSelector1.close();
+        leaderSelector2.close();
+        leaderSelector3.close();
 
     }
 }
