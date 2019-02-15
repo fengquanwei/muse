@@ -6,6 +6,8 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.leader.LeaderSelector;
+import org.apache.curator.framework.recipes.leader.LeaderSelectorListenerAdapter;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
@@ -78,6 +80,7 @@ public class RecipesUsage {
         logger.info("========== 事件监听 - 子节点监听 ==========");
 
         String path2 = "/b";
+        client.create().withMode(CreateMode.PERSISTENT).forPath(path2);
 
         // 子节点监听
         PathChildrenCache pathChildrenCache = new PathChildrenCache(client, path2, true);
@@ -89,8 +92,6 @@ public class RecipesUsage {
 
         // 子节点变更
         String subPath = path2 + "/b1";
-        client.create().withMode(CreateMode.PERSISTENT).forPath(path2);
-        Thread.sleep(100);
         client.create().withMode(CreateMode.PERSISTENT).forPath(subPath);
         Thread.sleep(100);
         client.setData().forPath(subPath, "B1".getBytes());
@@ -101,6 +102,49 @@ public class RecipesUsage {
         Thread.sleep(100);
 
         logger.info("========== Master 选举 ==========");
+
+        String masterPath = "/master";
+
+        LeaderSelector leaderSelector1 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
+            @Override
+            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
+                logger.info("leaderSelector1, take leadership");
+
+                Thread.sleep(1000);
+
+                logger.info("leaderSelector1, release leadership");
+            }
+        });
+        leaderSelector1.autoRequeue();
+        leaderSelector1.start();
+
+        LeaderSelector leaderSelector2 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
+            @Override
+            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
+                logger.info("leaderSelector2, take leadership");
+
+                Thread.sleep(2000);
+
+                logger.info("leaderSelector2, release leadership");
+            }
+        });
+        leaderSelector2.autoRequeue();
+        leaderSelector2.start();
+
+        LeaderSelector leaderSelector3 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
+            @Override
+            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
+                logger.info("leaderSelector3, take leadership");
+
+                Thread.sleep(3000);
+
+                logger.info("leaderSelector3, release leadership");
+            }
+        });
+        leaderSelector3.autoRequeue();
+        leaderSelector3.start();
+
+        Thread.sleep(15000);
 
     }
 }
