@@ -5,7 +5,6 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @create 2019/1/31 10:02
  **/
 public class ClientUsage {
-    private static Logger logger = LoggerFactory.getLogger(ClientUsage.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientUsage.class);
 
     // zk 客户端
     private static ZooKeeper zooKeeper;
@@ -25,77 +24,62 @@ public class ClientUsage {
     /**
      * 客户端用法
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         logger.info("========== 创建会话 ==========");
         createSession();
-        sleep(1000);
+        Thread.sleep(1000);
 
 //        long sessionId = zooKeeper.getSessionId();
 //        byte[] sessionPasswd = zooKeeper.getSessionPasswd();
 //
 //        logger.info("========== 复用会话 ==========");
 //        reuseSession(1, "wrongPasswd".getBytes());
-//        sleep(1000);
+//        Thread.sleep(1000);
 //
 //        logger.info("========== 复用会话 ==========");
 //        reuseSession(sessionId, sessionPasswd);
-//        sleep(1000);
+//        Thread.sleep(1000);
 
         logger.info("========== 创建节点 ==========");
         createNode();
-        sleep(1000);
+        Thread.sleep(1000);
 
         logger.info("========== 获取子节点列表 ==========");
         getChildrenNode();
-        sleep(1000);
+        Thread.sleep(1000);
 
         logger.info("========== 读取数据 ==========");
         getData();
-        sleep(1000);
+        Thread.sleep(1000);
 
         logger.info("========== 更新数据 ==========");
         setData();
-        sleep(1000);
+        Thread.sleep(1000);
 
         logger.info("========== 检测节点是否存在 ==========");
         exists();
-        sleep(1000);
+        Thread.sleep(1000);
 
         logger.info("========== 删除节点 ==========");
         deleteNode();
-        sleep(1000);
+        Thread.sleep(1000);
 
         logger.info("========== 权限控制 ==========");
         auth();
-        sleep(1000);
+        Thread.sleep(1000);
     }
 
     /**
      * 创建会话
      */
-    private static void createSession() {
+    private static void createSession() throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        String connectString = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183/test";
-        int sessionTimeout = 5000;
-        MyWatcher watcher = new MyWatcher(countDownLatch);
-
         // 创建 zk 实例
-        try {
-            zooKeeper = new ZooKeeper(connectString, sessionTimeout, watcher);
-        } catch (IOException e) {
-            logger.error("connect zookeeper error, connectString: {}, sessionTimeout: {}, watcher: {}", connectString, sessionTimeout, watcher, e);
-            return;
-        }
+        zooKeeper = new ZooKeeper("127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183/client", 5000, new MyWatcher(countDownLatch));
 
         // 等待 zk 连接
-        boolean reached;
-        try {
-            reached = countDownLatch.await(6000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            logger.error("count down latch await error", e);
-            return;
-        }
+        boolean reached = countDownLatch.await(6000, TimeUnit.MILLISECONDS);
 
         // 打印连接状态
         if (reached) {
@@ -108,29 +92,14 @@ public class ClientUsage {
     /**
      * 复用会话
      */
-    private static void reuseSession(long sessionId, byte[] sessionPasswd) {
+    private static void reuseSession(long sessionId, byte[] sessionPasswd) throws Exception {
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        String connectString = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183/test";
-        int sessionTimeout = 5000;
-        MyWatcher watcher = new MyWatcher(countDownLatch);
-
         // 创建 zk 实例
-        try {
-            zooKeeper = new ZooKeeper(connectString, sessionTimeout, watcher, sessionId, sessionPasswd);
-        } catch (IOException e) {
-            logger.error("connect zookeeper error, connectString: {}, sessionTimeout: {}, watcher: {}, sessionId: {}, sessionPasswd: {}", connectString, sessionTimeout, watcher, sessionId, sessionPasswd, e);
-            return;
-        }
+        zooKeeper = new ZooKeeper("127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183/client", 5000, new MyWatcher(countDownLatch), sessionId, sessionPasswd);
 
         // 等待 zk 连接
-        boolean reached;
-        try {
-            reached = countDownLatch.await(6000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            logger.error("count down latch await error", e);
-            return;
-        }
+        boolean reached = countDownLatch.await(6000, TimeUnit.MILLISECONDS);
 
         // 打印连接状态
         if (reached) {
@@ -143,186 +112,133 @@ public class ClientUsage {
     /**
      * 创建节点
      */
-    private static void createNode() {
+    private static void createNode() throws Exception {
         // 同步创建持久节点
-        try {
-            String path = zooKeeper.create("/t", "T".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            logger.info("create node success, path: {}", path);
-        } catch (Exception e) {
-            logger.error("create node error", e);
-        }
+        String path1 = zooKeeper.create("/a", "A".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        logger.info("create node success, path: {}", path1);
 
         // 同步创建临时节点
-        try {
-            String path = zooKeeper.create("/t1", "T".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-            logger.info("create node success, path: {}", path);
-        } catch (Exception e) {
-            logger.error("create node error", e);
-        }
+        String path2 = zooKeeper.create("/b", "B".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+        logger.info("create node success, path: {}", path2);
 
         // 同步创建临时顺序节点
-        try {
-            String path = zooKeeper.create("/t2", "T".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
-            logger.info("create node success, path: {}", path);
-        } catch (Exception e) {
-            logger.error("create node error", e);
-        }
+        String path3 = zooKeeper.create("/c", "C".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+        logger.info("create node success, path: {}", path3);
 
         // 异步创建临时节点
+        String path4 = "/d";
         MyStringCallback stringCallback = new MyStringCallback();
-        zooKeeper.create("/t3", "T".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL, stringCallback, "create path: /t3");
-        zooKeeper.create("/t3", "T".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL, stringCallback, "create path: /t3");
+        zooKeeper.create(path4, "D".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL, stringCallback, "create path: " + path4);
+        zooKeeper.create(path4, "D".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL, stringCallback, "create path: " + path4);
 
         // 异步创建临时顺序节点
-        zooKeeper.create("/t4", "T".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL, stringCallback, "create path: /t4");
+        String path5 = "/e";
+        zooKeeper.create(path5, "E".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL, stringCallback, "create path: " + path5);
     }
 
     /**
      * 获取子节点列表
      */
-    private static void getChildrenNode() {
-        try {
-            String path = "/";
+    private static void getChildrenNode() throws Exception {
+        String path = "/";
 
-            // 同步获取子节点列表
-            List<String> children = zooKeeper.getChildren(path, true);
-            logger.info("get children, path: {}, children: {}", path, children);
+        // 同步获取子节点列表
+        List<String> children = zooKeeper.getChildren(path, true);
+        logger.info("get children, path: {}, children: {}", path, children);
 
-            // 异步获取子节点列表
-            zooKeeper.getChildren(path, true, new MyChildren2Callback(), "get children");
+        // 异步获取子节点列表
+        zooKeeper.getChildren(path, true, new MyChildren2Callback(), "get children");
 
-            // 子节点列表变更
-            zooKeeper.create("/t5", "T".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL, new MyStringCallback(), "create path: /t5");
-        } catch (Exception e) {
-            logger.error("get children error", e);
-        }
+        // 子节点列表变更
+        String path6 = "/f";
+        zooKeeper.create(path6, "F".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL, new MyStringCallback(), "create path: " + path6);
     }
 
     /**
      * 读取数据
      */
-    private static void getData() {
-        String path = "/t";
+    private static void getData() throws Exception {
+        String path1 = "/a";
         Stat stat = new Stat();
-        try {
-            // 同步读取数据
-            byte[] data = zooKeeper.getData(path, true, stat);
-            logger.info("get data, path: {}, data: {}, stat: {}", path, new String(data), stat);
 
-            // 异步读取数据
-            zooKeeper.getData(path, true, new MyDataCallback(), "get data");
+        // 同步读取数据
+        byte[] data = zooKeeper.getData(path1, true, stat);
+        logger.info("get data, path: {}, data: {}, stat: {}", path1, new String(data), stat);
 
-            // 变更数据
-            zooKeeper.setData(path, "TEST".getBytes(), -1);
-        } catch (Exception e) {
-            logger.error("get data error, path: {}", path, e);
-        }
+        // 异步读取数据
+        zooKeeper.getData(path1, true, new MyDataCallback(), "get data");
+
+        // 变更数据
+        zooKeeper.setData(path1, "AAA".getBytes(), -1);
     }
 
     /**
      * 更新数据
      */
-    private static void setData() {
-        String path = "/t";
+    private static void setData() throws Exception {
+        String path1 = "/a";
 
         // 同步更新数据
-        try {
-            Stat stat1 = zooKeeper.setData(path, "test1".getBytes(), -1);
-            logger.info("set data, path: {}, stat: {}", path, stat1);
+        Stat stat1 = zooKeeper.setData(path1, "A1".getBytes(), -1);
+        logger.info("set data, path: {}, stat: {}", path1, stat1);
 
-            Stat stat2 = zooKeeper.setData(path, "test2".getBytes(), stat1.getVersion());
-            logger.info("set data, path: {}, stat: {}", path, stat2);
-        } catch (Exception e) {
-            logger.error("set data error, path: {}", path, e);
-        }
+        // 同步更新数据
+        Stat stat2 = zooKeeper.setData(path1, "A2".getBytes(), stat1.getVersion());
+        logger.info("set data, path: {}, stat: {}", path1, stat2);
 
         // 异步更新数据
-        zooKeeper.setData(path, "test3".getBytes(), -1, new MyStatCallback(), "set data");
+        zooKeeper.setData(path1, "A3".getBytes(), -1, new MyStatCallback(), "set data");
     }
 
     /**
      * 检测节点是否存在
      */
-    private static void exists() {
-        String path = "/a";
+    private static void exists() throws Exception {
+        String path7 = "/g";
 
         // 同步检测节点是否存在
-        try {
-            Stat stat = zooKeeper.exists(path, true);
-            logger.info("check exists, path: {}, stat: {}", path, stat);
-        } catch (Exception e) {
-            logger.error("check exists error, path: {}", path, e);
-        }
+        Stat stat = zooKeeper.exists(path7, true);
+        logger.info("check exists, path: {}, stat: {}", path7, stat);
 
         // 创建节点
-        try {
-            zooKeeper.create(path, "A".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-        } catch (Exception e) {
-            logger.error("create node error, path: {}", path, e);
-        }
+        zooKeeper.create(path7, "G".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
 
         // 更新节点
-        try {
-            zooKeeper.setData(path, "a".getBytes(), -1);
-        } catch (Exception e) {
-            logger.error("set data error, path: {}", path, e);
-        }
-        sleep(100);
+        zooKeeper.setData(path7, "GG".getBytes(), -1);
+        Thread.sleep(100);
 
         // 删除节点
-        try {
-            zooKeeper.delete(path, -1);
-        } catch (Exception e) {
-            logger.error("delete node error, path: {}", path, e);
-        }
+        zooKeeper.delete(path7, -1);
     }
 
     /**
      * 删除节点
      */
-    private static void deleteNode() {
-        try {
-            String path = "/t";
-            zooKeeper.delete(path, -1);
-            logger.info("delete node success, path: {}", path);
-        } catch (Exception e) {
-            logger.error("delete node error", e);
-        }
+    private static void deleteNode() throws Exception {
+        String path1 = "/a";
+        zooKeeper.delete(path1, -1);
+        logger.info("delete node success, path: {}", path1);
     }
 
     /**
      * 权限控制
      */
-    private static void auth() {
+    private static void auth() throws Exception {
         // 添加权限信息
         zooKeeper.addAuthInfo("digest", "foo:true".getBytes());
 
-        String path = "/b";
+        String path8 = "/h";
 
         // 创建节点
-        try {
-            zooKeeper.create(path, "B".getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL, CreateMode.EPHEMERAL);
-        } catch (Exception e) {
-            logger.error("create node error, path: {}", path, e);
-        }
+        zooKeeper.create(path8, "H".getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL, CreateMode.EPHEMERAL);
 
         // 使用无权限的 ZK 会话访问节点
         createSession();
-        try {
-            zooKeeper.getData(path, false, null);
-        } catch (Exception e) {
-            logger.info("get data error, path: {}, exception: {}", path, e.toString());
-        }
-    }
 
-    /**
-     * 休眠一会
-     */
-    private static void sleep(long millis) {
         try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            logger.error("sleep error", e);
+            zooKeeper.getData(path8, false, null);
+        } catch (Exception e) {
+            logger.error("no auth");
         }
     }
 

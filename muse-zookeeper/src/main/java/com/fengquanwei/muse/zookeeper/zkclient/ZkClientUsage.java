@@ -14,58 +14,51 @@ import java.util.List;
  * @create 2019/1/31 10:03
  **/
 public class ZkClientUsage {
-    private static Logger logger = LoggerFactory.getLogger(ZkClientUsage.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZkClientUsage.class);
 
     /**
      * ZkClient用法
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         logger.info("========== 创建会话 ==========");
 
-        ZkClient zkClient = new ZkClient("127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183/test", 5000);
+        ZkClient zkClient = new ZkClient("127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183/zkClient", 5000);
         logger.info("connect zookeeper success");
-
-        sleep(1000);
 
         logger.info("========== 创建节点 ==========");
 
-        String root = "/r";
-        zkClient.createPersistent(root, "R");
-        logger.info("create node, path: {}", root);
+        String path1 = "/a";
+        zkClient.createPersistent(path1, "A");
+        logger.info("create node, path: {}", path1);
 
-        String path = root + "/a/b/c/d/e";
-        zkClient.createPersistent(path, true);
-        logger.info("create node, path: {}", path);
-
-        sleep(1000);
+        String path2 = path1 + "/aa/aaa";
+        zkClient.createPersistent(path2, true);
+        logger.info("create node, path: {}", path2);
 
         logger.info("========== 获取子节点列表 ==========");
 
-        List<String> children = zkClient.getChildren(root);
-        logger.info("get children, path: {}, children: {}", root, children);
-
-        sleep(1000);
+        List<String> children = zkClient.getChildren(path1);
+        logger.info("get children, path: {}, children: {}", path1, children);
 
         logger.info("========== 监听子节点变更 ==========");
 
-        zkClient.subscribeChildChanges(root, (String parentPath, List<String> currentChilds) -> logger.info("handle child change, parentPath: {}, currentChilds: {}", parentPath, currentChilds));
+        zkClient.subscribeChildChanges(path1, (String parentPath, List<String> currentChildren) -> logger.info("handle child change, parentPath: {}, currentChildren: {}", parentPath, currentChildren));
 
-        zkClient.createPersistent(root + "/b");
-        sleep(100);
-        zkClient.delete(root + "/b");
+        String path3 = path1 + "/A";
+        zkClient.createPersistent(path3);
+        Thread.sleep(100);
+        zkClient.delete(path3);
 
-        sleep(1000);
+        Thread.sleep(100);
 
         logger.info("========== 读取数据 ==========");
 
-        Object data = zkClient.readData(root);
-        logger.info("read data, path: {}, data: {}", root, data);
-
-        sleep(1000);
+        Object data = zkClient.readData(path1);
+        logger.info("read data, path: {}, data: {}", path1, data);
 
         logger.info("========== 监听节点变更 ==========");
 
-        zkClient.subscribeDataChanges(root, new IZkDataListener() {
+        zkClient.subscribeDataChanges(path1, new IZkDataListener() {
             @Override
             public void handleDataChange(String dataPath, Object data) throws Exception {
                 logger.info("handle data change, dataPath: {}, data: {}", dataPath, data);
@@ -77,39 +70,20 @@ public class ZkClientUsage {
             }
         });
 
-        sleep(1000);
-
         logger.info("========== 更新数据 ==========");
 
-        String newData = "ROOT";
-        zkClient.writeData(root, newData);
-        logger.info("write data, path: {}, data: {}", root, newData);
-
-        sleep(1000);
+        String newData = "AAA";
+        zkClient.writeData(path1, newData);
+        logger.info("write data, path: {}, data: {}", path1, newData);
 
         logger.info("========== 检测节点是否存在 ==========");
 
-        boolean exists = zkClient.exists(root);
-        logger.info("exists, path: {}, exists: {}", root, exists);
-
-        sleep(1000);
+        boolean exists = zkClient.exists(path1);
+        logger.info("exists, path: {}, exists: {}", path1, exists);
 
         logger.info("========== 删除节点 ==========");
 
-        zkClient.deleteRecursive(root);
-        logger.info("delete node, path: {}", root);
-
-        sleep(1000);
-    }
-
-    /**
-     * 休眠一会
-     */
-    private static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            logger.error("sleep error", e);
-        }
+        zkClient.deleteRecursive(path1);
+        logger.info("delete node, path: {}", path1);
     }
 }
