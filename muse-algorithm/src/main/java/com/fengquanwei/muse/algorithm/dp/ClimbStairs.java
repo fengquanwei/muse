@@ -20,7 +20,7 @@ import java.util.Map;
  **/
 public class ClimbStairs {
     /**
-     * 递归求解法
+     * 递归算法
      * 时间复杂度：O(2^n)
      */
     public static int getClimbingWays1(int n) {
@@ -67,7 +67,7 @@ public class ClimbStairs {
     }
 
     /**
-     * 自底向上递推法
+     * 动态规划算法：自底向上递推法
      * 时间复杂度：O(n)，空间复杂度：0(1)
      */
     public static int getClimbingWays3(int n) {
