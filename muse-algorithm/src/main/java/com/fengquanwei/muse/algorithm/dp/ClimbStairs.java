@@ -65,8 +65,8 @@ public class ClimbStairs {
         }
 
         int result = getClimbingWays2(n - 1, cache) + getClimbingWays2(n - 2, cache);
-        cache.put(n, result);
 
+        cache.put(n, result);
         return result;
     }
 
@@ -90,15 +90,15 @@ public class ClimbStairs {
         int a = 1;
         int b = 2;
 
-        int x = 0;
+        int result = 0;
 
         for (int i = 3; i <= n; i++) {
-            x = a + b;
+            result = a + b;
             a = b;
-            b = x;
+            b = result;
         }
 
-        return x;
+        return result;
     }
 
     /**
