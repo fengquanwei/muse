@@ -24,7 +24,7 @@ public class ClimbStairs {
     private static final Logger logger = LoggerFactory.getLogger(ClimbStairs.class);
 
     /**
-     * 自顶向下递归算法
+     * 自顶向下的递归算法
      * 时间复杂度：O(2^n)
      */
     public static int getClimbingWays1(int n) {
@@ -44,7 +44,7 @@ public class ClimbStairs {
     }
 
     /**
-     * 自顶向下递归算法（带忘录）
+     * 自顶向下的递归算法（带忘录）
      * 时间复杂度：O(n)
      */
     public static int getClimbingWays2(int n, Map<Integer, Integer> cache) {
@@ -71,7 +71,7 @@ public class ClimbStairs {
     }
 
     /**
-     * 自底向上动态规划算法
+     * 自底向上的动态规划算法
      * 时间复杂度：O(n)，空间复杂度：0(1)
      */
     public static int getClimbingWays3(int n) {
