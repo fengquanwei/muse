@@ -1,6 +1,8 @@
 package com.fengquanwei.muse.algorithm.dp;
 
-import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 
 /**
@@ -19,6 +21,8 @@ import java.util.Map;
  * @create 2019/2/22 00:41
  **/
 public class ClimbStairs {
+    private static final Logger logger = LoggerFactory.getLogger(ClimbStairs.class);
+
     /**
      * 递归算法
      * 时间复杂度：O(2^n)
@@ -101,8 +105,10 @@ public class ClimbStairs {
      * 测试
      */
     public static void main(String[] args) {
-        System.out.println(getClimbingWays1(10));
-        System.out.println(getClimbingWays2(10, new HashMap<>()));
-        System.out.println(getClimbingWays3(10));
+        for (int i = 1; i <= 100; i++) {
+//            logger.info("n: {}, climbing ways: {}", i, getClimbingWays1(i));
+//            logger.info("n: {}, climbing ways: {}", i, getClimbingWays2(i, new HashMap<>()));
+//            logger.info("n: {}, climbing ways: {}", i, getClimbingWays3(i));
+        }
     }
 }
