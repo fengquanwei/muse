@@ -17,10 +17,10 @@ import java.util.Map;
  * 【问题建模】
  * 钢条长度：n
  * 钢条价格：p(n)
- * 最大收益：f(n)
+ * 最大收益：r(n)
  * 第一切割点：k
- * f(0) = 0
- * f(n) = max(p(k) + f(n - k)) (0 < k <= n)
+ * r(0) = 0
+ * r(n) = max{p(k) + r(n - k)} (n >= 1, 其中 0 < k <= n)
  *
  * @author fengquanwei
  * @create 2019/2/24 17:53
@@ -105,7 +105,7 @@ public class CutRod {
      * 自底向上的动态规划算法（带方案）
      * 时间复杂度：O(n^2)
      */
-    public static int cutRod4(int n, Map<Integer, Integer> p, Map<Integer, Integer> cache, Map<Integer, Integer> solution) {
+    public static int cutRod4(int n, Map<Integer, Integer> p, Map<Integer, Integer> cache, Map<Integer, Integer> s) {
         cache.put(0, 0);
 
         for (int i = 1; i <= n; i++) {
@@ -116,7 +116,7 @@ public class CutRod {
                 int subResult = p.get(k) + cache.get(i - k);
                 if (result < subResult) {
                     result = subResult;
-                    solution.put(i, k);
+                    s.put(i, k);
                 }
             }
 
@@ -124,19 +124,19 @@ public class CutRod {
         }
 
         // 打印切割方案
-        printCutRodSolution(n, solution);
+        printCutRodSolution(n, s);
 
         return cache.get(n);
     }
 
     // 打印切割方案
-    public static void printCutRodSolution(int n, Map<Integer, Integer> solution) {
-        if (solution != null && solution.size() > 0) {
+    public static void printCutRodSolution(int n, Map<Integer, Integer> s) {
+        if (s != null && s.size() > 0) {
             StringBuffer plan = new StringBuffer();
             plan.append("cut plan: ").append(n).append(" = ");
             while (n > 0) { // 递归打印
-                plan.append(solution.get(n)).append(" + ");
-                n = n - solution.get(n);
+                plan.append(s.get(n)).append(" + ");
+                n = n - s.get(n);
             }
             System.out.println();
             logger.info(plan.toString().substring(0, plan.length() - 2));
