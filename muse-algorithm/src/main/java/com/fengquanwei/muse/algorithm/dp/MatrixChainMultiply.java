@@ -25,6 +25,7 @@ public class MatrixChainMultiply {
 
     /**
      * 自底向上的动态规划算法
+     * 时间复杂度：O(n^3)
      */
     public static void matrixChainOrder(int[] p, int[][] m, int[][] s) {
         // l：矩阵链长度
@@ -75,7 +76,7 @@ public class MatrixChainMultiply {
      */
     public static void main(String[] args) {
         // 矩阵规模
-        int[] p = {1, 2, 3, 4, 5, 6, 7};
+        int[] p = {30, 35, 15, 5, 10, 20, 25};
         // 矩阵数量
         int n = p.length - 1;
         // 最优值
