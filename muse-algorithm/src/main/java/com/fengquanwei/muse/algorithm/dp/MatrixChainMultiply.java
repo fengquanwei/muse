@@ -7,15 +7,15 @@ import org.slf4j.LoggerFactory;
  * 矩阵链乘法问题
  * <p>
  * 【问题描述】
- * 给定 n 个矩阵的链 <A1，A2，...，An>，矩阵 Ai 的规模为 p(i-1) X p(i)（1 <= i <= n），
+ * 给定 n 个矩阵的链 <A1，A2，...，An>，矩阵 Ai 的规模为 p[i-1] X p[i]（1 <= i <= n），
  * 求完全括号化方案，使得计算矩阵链乘积所需标量乘法次数最少。
  * <p>
  * 【问题建模】
- * 最小代价：m(i, j)
- * 矩阵规模：p(i - 1) X p(i)
+ * 最小代价：m[i, j]
+ * 矩阵规模：p[i - 1] X p[i]
  * 最优分割点：k
- * m(i, j) = 0 (i == j)
- * m(i, j) = min{m(i, k) + m(k + 1, j) + p(i - 1)*p(k)*p(j)} (i < j，其中 i <= k < j)
+ * m[i, j] = 0 (i == j)
+ * m[i, j] = min{m[i, k] + m[k + 1, j] + p[i - 1] * p[k] * p[j]} (i < j，其中 i <= k < j)
  *
  * @author fengquanwei
  * @create 2019/2/27 22:21
