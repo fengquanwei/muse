@@ -1,5 +1,8 @@
 package com.fengquanwei.muse.algorithm.dp;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 最长公共子序列问题
  * 【问题描述】
@@ -16,7 +19,9 @@ package com.fengquanwei.muse.algorithm.dp;
  * @author fengquanwei
  * @create 2019/2/28 21:57
  **/
-public class LongestCommonSubsequence {
+public class LongestCommonSubSequence {
+    private static final Logger logger = LoggerFactory.getLogger(LongestCommonSubSequence.class);
+
     /**
      * 自底向上的动态规划算法
      * 时间复杂度：O(m*n)
@@ -26,46 +31,51 @@ public class LongestCommonSubsequence {
             for (int j = 1, columns = c[0].length; j < columns; j++) {
                 if (X[i - 1] == Y[j - 1]) {
                     c[i][j] = c[i - 1][j - 1] + 1;
-                    b[i][j] = 0;
+                    b[i][j] = 0; // 选中
                 } else if (c[i - 1][j] >= c[i][j - 1]) {
                     c[i][j] = c[i - 1][j];
-                    b[i][j] = 1;
+                    b[i][j] = 1; // 向上选
                 } else {
                     c[i][j] = c[i][j - 1];
-                    b[i][j] = -1;
+                    b[i][j] = -1; // 向左选
                 }
             }
         }
     }
 
     /**
-     * 打印 LCS
+     * 获取 LCS
      */
-    public static void printLcs(int[][] b, char[] X, int i, int j, StringBuffer sb) {
+    public static void getLcs(int[][] b, char[] X, int i, int j, StringBuffer lcs) {
         if (i == 0 || j == 0) {
             return;
         }
 
         if (b[i][j] == 0) {
-            sb.append(String.valueOf(X[i - 1]));
-            printLcs(b, X, i - 1, j - 1, sb);
+            lcs.append(String.valueOf(X[i - 1]));
+            getLcs(b, X, i - 1, j - 1, lcs);
         } else if (b[i][j] > 0) {
-            printLcs(b, X, i - 1, j, sb);
+            getLcs(b, X, i - 1, j, lcs);
         } else {
-            printLcs(b, X, i, j - 1, sb);
+            getLcs(b, X, i, j - 1, lcs);
         }
     }
 
-    public static void printArray(char[] X, char[] Y, int[][] c, boolean arrows) {
-        for (int i = 0; i < c.length; i++) {
-            for (int j = 0; j < c[i].length; j++) {
+    /**
+     * 打印数组
+     */
+    public static void printArray(char[] X, char[] Y, int[][] ints, boolean arrows) {
+        for (int i = 0; i < ints.length; i++) {
+            StringBuffer line = new StringBuffer();
+            for (int j = 0; j < ints[i].length; j++) {
                 if (i == 0 && j > 0) {
-                    System.out.print(Y[j - 1] + "\t");
+                    line.append(Y[j - 1] + "\t");
                 } else if (j == 0 && i > 0) {
-                    System.out.print(X[i - 1] + "\t");
+                    line.append(X[i - 1] + "\t");
                 } else {
+                    // 打印箭头
                     if (arrows) {
-                        int k = c[i][j];
+                        int k = ints[i][j];
                         char ch = ' ';
                         if (k == 0) {
                             ch = '↖';
@@ -74,13 +84,13 @@ public class LongestCommonSubsequence {
                         } else {
                             ch = '←';
                         }
-                        System.out.print(ch + "\t");
-                    } else {
-                        System.out.print(c[i][j] + "\t");
+                        line.append(ch + "\t");
+                    } else { // 打印 LCS 长度
+                        line.append(ints[i][j] + "\t");
                     }
                 }
             }
-            System.out.println();
+            logger.info(line.toString());
         }
     }
 
@@ -94,17 +104,20 @@ public class LongestCommonSubsequence {
         int[][] c = new int[m + 1][n + 1];
         int[][] b = new int[m + 1][n + 1];
 
+        logger.info("X: {}", new String(X));
+        logger.info("Y: {}", new String(Y));
+
         // LCS
         lcs(X, Y, c, b);
-        System.out.println("LCS length: " + c[m][n]);
+        logger.info("LCS length: {}", c[m][n]);
 
-        StringBuffer sb = new StringBuffer();
-        printLcs(b, X, m, n, sb);
-        System.out.println("LCS: " + sb.reverse()); // 倒序打印
+        StringBuffer lcs = new StringBuffer();
+        getLcs(b, X, m, n, lcs);
+        logger.info("LCS: {}", lcs.reverse()); // 倒序打印
 
-        System.out.println("======================= c =======================");
+        logger.info("======================= lcs length =======================");
         printArray(X, Y, c, false);
-        System.out.println("======================= b =======================");
+        logger.info("======================= lcs =======================");
         printArray(X, Y, b, true);
     }
 }
