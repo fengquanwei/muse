@@ -29,7 +29,7 @@ public class ClimbStairs {
      * 自顶向下的递归算法
      * 时间复杂度：O(2^n)
      */
-    public static int getClimbingWays1(int n) {
+    public static long getClimbingWays1(int n) {
         if (n < 1) {
             return 0;
         }
@@ -49,7 +49,7 @@ public class ClimbStairs {
      * 自顶向下的递归算法（带忘录）
      * 时间复杂度：O(n)
      */
-    public static int getClimbingWays2(int n, Map<Integer, Integer> cache) {
+    public static long getClimbingWays2(int n, Map<Integer, Long> cache) {
         if (n < 1) {
             return 0;
         }
@@ -66,7 +66,7 @@ public class ClimbStairs {
             return cache.get(n);
         }
 
-        int result = getClimbingWays2(n - 1, cache) + getClimbingWays2(n - 2, cache);
+        long result = getClimbingWays2(n - 1, cache) + getClimbingWays2(n - 2, cache);
 
         cache.put(n, result);
         return result;
@@ -76,7 +76,7 @@ public class ClimbStairs {
      * 自底向上的动态规划算法
      * 时间复杂度：O(n)，空间复杂度：0(1)
      */
-    public static int getClimbingWays3(int n) {
+    public static long getClimbingWays3(int n) {
         if (n < 1) {
             return 0;
         }
@@ -89,10 +89,10 @@ public class ClimbStairs {
             return 2;
         }
 
-        int a = 1;
-        int b = 2;
+        long a = 1;
+        long b = 2;
 
-        int result = 0;
+        long result = 0;
 
         for (int i = 3; i <= n; i++) {
             result = a + b;
