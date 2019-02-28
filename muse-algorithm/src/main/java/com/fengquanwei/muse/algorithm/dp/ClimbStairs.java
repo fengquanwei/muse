@@ -107,7 +107,7 @@ public class ClimbStairs {
      * 测试
      */
     public static void main(String[] args) {
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 88; i++) {
 //            logger.info("n: {}, climbing ways: {}", i, getClimbingWays1(i));
 //            logger.info("n: {}, climbing ways: {}", i, getClimbingWays2(i, new HashMap<>()));
 //            logger.info("n: {}, climbing ways: {}", i, getClimbingWays3(i));

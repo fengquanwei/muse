@@ -160,7 +160,7 @@ public class CutRod {
         p.put(9, 24);
         p.put(10, 30);
 
-        for (int i = 1; i <= 100; i++) {
+        for (int i = 1; i <= 88; i++) {
 //            logger.info("n: {}, incoming: {}", i, cutRod1(i, p));
 //            logger.info("n: {}, incoming: {}", i, cutRod2(i, p, new HashMap<>()));
 //            logger.info("n: {}, incoming: {}", i, cutRod3(i, p, new HashMap<>()));
