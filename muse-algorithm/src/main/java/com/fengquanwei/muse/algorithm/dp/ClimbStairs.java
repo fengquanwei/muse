@@ -3,8 +3,6 @@ package com.fengquanwei.muse.algorithm.dp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-
 /**
  * 爬楼梯问题
  * <p>
@@ -17,7 +15,7 @@ import java.util.Map;
  * 总共走法：f(n)
  * f(1) = 1
  * f(2) = 2
- * f(n) = f(n-1) + f(n-2) (n >= 3)
+ * f(n) = f(n - 1) + f(n - 2) (n >= 3)
  *
  * @author fengquanwei
  * @create 2019/2/22 00:41
@@ -49,7 +47,7 @@ public class ClimbStairs {
      * 自顶向下的递归算法（带忘录）
      * 时间复杂度：O(n)
      */
-    public static long getClimbingWays2(int n, Map<Integer, Long> cache) {
+    public static long getClimbingWays2(int n, long[] cache) {
         if (n < 1) {
             return 0;
         }
@@ -62,13 +60,13 @@ public class ClimbStairs {
             return 2;
         }
 
-        if (cache.containsKey(n)) {
-            return cache.get(n);
+        if (cache[n] != 0) {
+            return cache[n];
         }
 
         long result = getClimbingWays2(n - 1, cache) + getClimbingWays2(n - 2, cache);
 
-        cache.put(n, result);
+        cache[n] = result;
         return result;
     }
 
@@ -108,9 +106,9 @@ public class ClimbStairs {
      */
     public static void main(String[] args) {
         for (int i = 1; i <= 88; i++) {
-//            logger.info("n: {}, climbing ways: {}", i, getClimbingWays1(i));
-//            logger.info("n: {}, climbing ways: {}", i, getClimbingWays2(i, new HashMap<>()));
-//            logger.info("n: {}, climbing ways: {}", i, getClimbingWays3(i));
+//            logger.info("n: {}, f: {}", i, getClimbingWays1(i));
+//            logger.info("n: {}, f: {}", i, getClimbingWays2(i, new long[i + 1]));
+            logger.info("n: {}, f: {}", i, getClimbingWays3(i));
         }
     }
 }
