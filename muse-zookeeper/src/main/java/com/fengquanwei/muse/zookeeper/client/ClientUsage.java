@@ -40,6 +40,10 @@ public class ClientUsage {
 //        reuseSession(sessionId, sessionPasswd);
 //        Thread.sleep(1000);
 
+        logger.info("========== 清理环境 ==========");
+        clean();
+        Thread.sleep(1000);
+
         logger.info("========== 创建节点 ==========");
         createNode();
         Thread.sleep(1000);
@@ -107,6 +111,21 @@ public class ClientUsage {
         } else {
             logger.error("connect zookeeper timeout");
         }
+    }
+
+    /**
+     * 清理环境
+     */
+    private static void clean() throws Exception {
+        String root = "/";
+
+        Stat exists = zooKeeper.exists(root, false);
+
+        if (exists == null) {
+            zooKeeper.create(root, "ROOT".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        }
+
+        logger.info("clean");
     }
 
     /**

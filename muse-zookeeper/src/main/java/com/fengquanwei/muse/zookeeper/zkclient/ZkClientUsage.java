@@ -2,6 +2,7 @@ package com.fengquanwei.muse.zookeeper.zkclient;
 
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
+import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,16 @@ public class ZkClientUsage {
 
         ZkClient zkClient = new ZkClient("127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183/zkClient", 5000);
         logger.info("connect zookeeper success");
+
+        logger.info("========== 清理环境 ==========");
+
+        String root = "/";
+
+        if (!zkClient.exists(root)) {
+            zkClient.create(root, "ROOT", CreateMode.PERSISTENT);
+        }
+
+        logger.info("clean");
 
         logger.info("========== 创建节点 ==========");
 

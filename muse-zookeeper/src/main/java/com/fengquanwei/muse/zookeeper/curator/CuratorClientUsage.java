@@ -15,13 +15,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Curator 用法
+ * Curator 客户端用法
  *
  * @author fengquanwei
  * @create 2019/1/31 10:03
  **/
-public class CuratorUsage {
-    private static Logger logger = LoggerFactory.getLogger(CuratorUsage.class);
+public class CuratorClientUsage {
+    private static Logger logger = LoggerFactory.getLogger(CuratorClientUsage.class);
 
     /**
      * Curator 用法

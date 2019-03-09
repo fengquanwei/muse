@@ -25,13 +25,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 典型使用场景
+ * Curator 典型使用场景
  *
  * @author fengquanwei
  * @create 2019/2/13 18:21
  **/
-public class RecipesUsage {
-    private static final Logger logger = LoggerFactory.getLogger(RecipesUsage.class);
+public class CuratorRecipesUsage {
+    private static final Logger logger = LoggerFactory.getLogger(CuratorRecipesUsage.class);
 
     /**
      * 典型使用场景
