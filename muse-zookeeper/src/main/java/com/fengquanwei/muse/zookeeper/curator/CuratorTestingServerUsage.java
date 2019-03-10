@@ -36,7 +36,7 @@ public class CuratorTestingServerUsage {
     }
 
     /**
-     * 本地 zk 服务器
+     * 本地 zk 测试服务器（单机模式）
      */
     private static void testingServer() throws Exception {
         String path = "/zookeeper";
@@ -63,7 +63,7 @@ public class CuratorTestingServerUsage {
     }
 
     /**
-     * 本地 zk 集群
+     * 本地 zk 测试服务器（集群模式）
      */
     private static void testingCluster() throws Exception {
         TestingCluster cluster = new TestingCluster(3);
