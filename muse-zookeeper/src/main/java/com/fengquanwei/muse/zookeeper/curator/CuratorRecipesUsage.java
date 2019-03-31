@@ -7,8 +7,10 @@ import org.apache.curator.framework.recipes.atomic.DistributedAtomicInteger;
 import org.apache.curator.framework.recipes.barriers.DistributedDoubleBarrier;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.NodeCache;
+import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.recipes.leader.LeaderSelector;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListenerAdapter;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
@@ -51,7 +53,7 @@ public class CuratorRecipesUsage {
         // 启动客户端
         client.start();
 
-        logger.info("client start");
+        logger.info("创建会话成功");
 
         logger.info("========== 清理环境 ==========");
 
@@ -61,7 +63,7 @@ public class CuratorRecipesUsage {
         // 创建根节点
         client.create().forPath("");
 
-        logger.info("clean");
+        logger.info("清理环境完成");
 
         logger.info("========== 事件监听 - 节点监听 ==========");
 
@@ -70,95 +72,68 @@ public class CuratorRecipesUsage {
         // 节点监听
         NodeCache nodeCache = new NodeCache(client, path1, false);
         nodeCache.start(true);
-        nodeCache.getListenable().addListener(() -> {
-                    ChildData currentData = nodeCache.getCurrentData();
-                    if (currentData != null) {
-                        logger.info("node changed, path: {}, data: {}, stat: {}", path1, new String(currentData.getData()), currentData.getStat());
-                    } else {
-                        logger.info("node changed, path: {}, data: {}, stat: {}", path1, null, null);
-                    }
+        nodeCache.getListenable().addListener(new NodeCacheListener() {
+            @Override
+            public void nodeChanged() throws Exception {
+                ChildData currentData = nodeCache.getCurrentData();
+                if (currentData != null) {
+                    logger.info("【NodeCacheListener】处理节点变更, 节点路径: {}, 节点数据: {}, 节点状态: {}", path1, new String(currentData.getData()), currentData.getStat());
+                } else {
+                    logger.info("【NodeCacheListener】处理节点变更, 节点路径: {}, 节点数据: {}, 节点状态: {}", path1, null, null);
                 }
-        );
+            }
+        });
 
         // 节点变更
         client.create().withMode(CreateMode.EPHEMERAL).forPath(path1, "A".getBytes());
+        logger.info("创建节点, 节点路径: {}", path1);
         Thread.sleep(100);
         client.setData().forPath(path1, "AA".getBytes());
+        logger.info("更新节点, 节点路径: {}", path1);
         Thread.sleep(100);
         client.delete().forPath(path1);
+        logger.info("删除节点, 节点路径: {}", path1);
         Thread.sleep(100);
 
         logger.info("========== 事件监听 - 子节点监听 ==========");
 
         String path2 = "/b";
-        client.create().withMode(CreateMode.PERSISTENT).forPath(path2);
 
         // 子节点监听
         PathChildrenCache pathChildrenCache = new PathChildrenCache(client, path2, true);
         pathChildrenCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
-        pathChildrenCache.getListenable().addListener((CuratorFramework curatorFramework, PathChildrenCacheEvent pathChildrenCacheEvent) -> {
-                    logger.info("child event: {}", pathChildrenCacheEvent);
+        pathChildrenCache.getListenable().addListener(new PathChildrenCacheListener() {
+            @Override
+            public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+                PathChildrenCacheEvent.Type type = event.getType();
+                ChildData childData = event.getData();
+
+                if (childData != null) {
+                    String path = childData.getPath();
+                    byte[] data = childData.getData();
+                    logger.info("【PathChildrenCacheListener】处理子节点变更, 节点路径: {}, 事件类型: {}, 子节点路径: {}, 子节点数据: {}", path2, type, path, new String(data));
+                } else {
+                    logger.info("【PathChildrenCacheListener】处理子节点变更, 节点路径: {}, 事件类型: {}, 子节点路径: {}, 子节点数据: {}", path2, type, null, null);
                 }
-        );
+            }
+        });
 
         // 子节点变更
+        client.create().withMode(CreateMode.PERSISTENT).forPath(path2);
+        logger.info("创建节点, 节点路径: {}", path2);
         String subPath = path2 + "/b1";
         client.create().withMode(CreateMode.PERSISTENT).forPath(subPath);
+        logger.info("创建节点, 节点路径: {}", subPath);
         Thread.sleep(100);
         client.setData().forPath(subPath, "B1".getBytes());
+        logger.info("更新节点, 节点路径: {}", subPath);
         Thread.sleep(100);
         client.delete().forPath(subPath);
+        logger.info("删除节点, 节点路径: {}", subPath);
         Thread.sleep(100);
         client.delete().forPath(path2);
+        logger.info("删除节点, 节点路径: {}", path2);
         Thread.sleep(100);
-
-        logger.info("========== Master 选举 ==========");
-
-        String masterPath = "/master";
-
-        LeaderSelector leaderSelector1 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
-            @Override
-            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
-                logger.info("leaderSelector1, take leadership");
-
-                Thread.sleep(1000);
-
-                logger.info("leaderSelector1, release leadership");
-            }
-        });
-        leaderSelector1.autoRequeue();
-        leaderSelector1.start();
-
-        LeaderSelector leaderSelector2 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
-            @Override
-            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
-                logger.info("leaderSelector2, take leadership");
-
-                Thread.sleep(2000);
-
-                logger.info("leaderSelector2, release leadership");
-            }
-        });
-        leaderSelector2.autoRequeue();
-        leaderSelector2.start();
-
-        LeaderSelector leaderSelector3 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
-            @Override
-            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
-                logger.info("leaderSelector3, take leadership");
-
-                Thread.sleep(3000);
-
-                logger.info("leaderSelector3, release leadership");
-            }
-        });
-        leaderSelector3.autoRequeue();
-        leaderSelector3.start();
-
-        Thread.sleep(6000);
-        leaderSelector1.close();
-        leaderSelector2.close();
-        leaderSelector3.close();
 
         logger.info("========== 分布式锁 ==========");
 
@@ -176,17 +151,17 @@ public class CuratorRecipesUsage {
                     // 获取锁
                     lock.acquire();
                 } catch (Exception e) {
-                    logger.error("acquire lock error", e);
+                    logger.error("获取锁异常", e);
                 }
 
                 String orderNo = new SimpleDateFormat("HH:mm:ss.SSS").format(new Date());
-                logger.info("order no: {}", orderNo);
+                logger.info("订单号: {}", orderNo);
 
                 // 释放锁
                 try {
                     lock.release();
                 } catch (Exception e) {
-                    logger.error("release lock error", e);
+                    logger.error("释放锁异常", e);
                 }
             }).start();
         }
@@ -195,6 +170,112 @@ public class CuratorRecipesUsage {
         lockCountDownLatch.countDown();
 
         Thread.sleep(1000);
+
+        logger.info("========== Master 选举 ==========");
+
+        String masterPath = "/master";
+
+//        PathChildrenCache masterPathChildCache = new PathChildrenCache(client, masterPath, true);
+//        masterPathChildCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+//        masterPathChildCache.getListenable().addListener(new PathChildrenCacheListener() {
+//            @Override
+//            public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+//                PathChildrenCacheEvent.Type type = event.getType();
+//                ChildData childData = event.getData();
+//
+//                if (childData != null) {
+//                    String path = childData.getPath();
+//                    byte[] data = childData.getData();
+//                    logger.info("【PathChildrenCacheListener】处理子节点变更, 节点路径: {}, 事件类型: {}, 子节点路径: {}, 子节点数据: {}", masterPath, type, path, new String(data));
+//                } else {
+//                    logger.info("【PathChildrenCacheListener】处理子节点变更, 节点路径: {}, 事件类型: {}, 子节点路径: {}, 子节点数据: {}", masterPath, type, null, null);
+//                }
+//
+//            }
+//        });
+
+        LeaderSelector leaderSelector1 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
+            @Override
+            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
+                try {
+                    logger.info("一号机获取 Leader 权利");
+
+                    Thread.sleep(1000);
+
+                    logger.info("一号机释放 Leader 权利");
+                } catch (Exception e) {
+                    logger.error("一号机执行任务异常", e);
+                } finally {
+                    logger.info("一号机执行任务结束");
+                }
+            }
+        });
+        leaderSelector1.autoRequeue();
+        leaderSelector1.start();
+
+        LeaderSelector leaderSelector2 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
+            @Override
+            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
+                try {
+                    logger.info("二号机获取 Leader 权利");
+
+                    Thread.sleep(2000);
+
+                    logger.info("二号机释放 Leader 权利");
+                } catch (Exception e) {
+                    logger.error("二号机执行任务异常", e);
+                } finally {
+                    logger.info("二号机执行任务结束");
+                }
+            }
+        });
+        leaderSelector2.autoRequeue();
+        leaderSelector2.start();
+
+        LeaderSelector leaderSelector3 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
+            @Override
+            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
+                try {
+                    logger.info("三号机获取 Leader 权利");
+
+                    Thread.sleep(3000);
+
+                    logger.info("三号机释放 Leader 权利");
+                } catch (Exception e) {
+                    logger.error("三号机执行任务异常", e);
+                } finally {
+                    logger.info("三号机执行任务结束");
+                }
+            }
+        });
+        leaderSelector3.autoRequeue();
+        leaderSelector3.start();
+
+        LeaderSelector leaderSelector4 = new LeaderSelector(client, masterPath, new LeaderSelectorListenerAdapter() {
+            @Override
+            public void takeLeadership(CuratorFramework curatorFramework) throws Exception {
+                try {
+                    logger.info("四号机获取 Leader 权利");
+
+                    Thread.sleep(4000);
+
+                    logger.info("四号机释放 Leader 权利");
+                } catch (Exception e) {
+                    logger.error("四号机执行任务异常", e);
+                } finally {
+                    logger.info("四号机执行任务结束");
+                }
+            }
+        });
+        leaderSelector4.autoRequeue();
+        leaderSelector4.start();
+
+        Thread.sleep(10000);
+        leaderSelector1.close();
+        leaderSelector2.close();
+        leaderSelector3.close();
+        leaderSelector4.close();
+        Thread.sleep(100);
 
         logger.info("========== 分布式计数器 ==========");
 
@@ -211,9 +292,9 @@ public class CuratorRecipesUsage {
                 while (atomicValue == null || !atomicValue.succeeded()) {
                     try {
                         atomicValue = distributedAtomicInteger.add(1);
-                        logger.info("add succeeded: {}, pre value: {}, post value: {}", atomicValue.succeeded(), atomicValue.preValue(), atomicValue.postValue());
+                        logger.info("计数成功: {}, 前值: {}, 后值: {}", atomicValue.succeeded(), atomicValue.preValue(), atomicValue.postValue());
                     } catch (Exception e) {
-                        logger.error("add error", e);
+                        logger.error("计数异常", e);
                     }
                 }
 
@@ -232,6 +313,8 @@ public class CuratorRecipesUsage {
         executorService.submit(new Worker("2 号选手", barrierPath, client));
         executorService.submit(new Worker("3 号选手", barrierPath, client));
         executorService.shutdown();
+
+        Thread.sleep(1000000000);
     }
 
     /**
@@ -252,13 +335,13 @@ public class CuratorRecipesUsage {
         public void run() {
             try {
                 DistributedDoubleBarrier barrier = new DistributedDoubleBarrier(client, path, 3);
-                logger.info(this.name + " ready");
+                logger.info(this.name + ": 准备");
                 barrier.enter();
-                logger.info(this.name + " enter");
+                logger.info(this.name + ": 进入");
                 barrier.leave();
-                logger.info(this.name + " leave");
+                logger.info(this.name + ": 离开");
             } catch (Exception e) {
-                logger.error("await error", e);
+                logger.error("异常", e);
             }
         }
     }
