@@ -225,6 +225,9 @@ public class ClientUsage {
         Stat stat = zooKeeper.exists(path7, true);
         logger.info("同步检测节点是否存在, 节点路径: {}, 节点状态: {}", path7, stat);
 
+        // 异步检测节点是否存在
+        zooKeeper.exists(path7, false, new MyStatCallback(), "异步检测节点是否存在");
+
         // 创建节点
         zooKeeper.create(path7, "G".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         logger.info("同步创建临时节点, 节点路径: {}", path7);
@@ -360,6 +363,7 @@ public class ClientUsage {
      * -4：ConnectionLos
      * -110：NodeExist
      * -112：SessionExpired
+     * etc.
      */
 
     /**
