@@ -28,9 +28,9 @@ public class CuratorTestingServerUsage {
     public static void main(String[] args) throws Exception {
         logger.info("========== TestingServer ==========");
 
-        testingServer();
+//        testingServer();
 
-        logger.info("========== testingCluster ==========");
+        logger.info("========== TestingCluster ==========");
 
         testingCluster();
     }
@@ -40,6 +40,8 @@ public class CuratorTestingServerUsage {
      */
     private static void testingServer() throws Exception {
         String path = "/zookeeper";
+
+        // 启动服务器
         TestingServer server = new TestingServer(2184, new File("datas/zk-data"));
 
         // 构造客户端
@@ -55,7 +57,7 @@ public class CuratorTestingServerUsage {
 
         List<String> list = client.getChildren().forPath(path);
 
-        logger.info("path: {}, children: {}", path, list);
+        logger.info("节点路径: {}, 子节点列表: {}", path, list);
 
         Thread.sleep(1000);
 
