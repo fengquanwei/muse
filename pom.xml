@@ -12,6 +12,7 @@
         <module>muse-algorithm</module>
         <module>muse-java</module>
         <module>muse-springmvc</module>
+        <module>muse-tool</module>
         <module>muse-util</module>
         <module>muse-zookeeper</module>
     </modules>
