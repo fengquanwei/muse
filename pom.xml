@@ -9,10 +9,11 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>muse-util</module>
-        <module>muse-springmvc</module>
-        <module>muse-zookeeper</module>
         <module>muse-algorithm</module>
+        <module>muse-java</module>
+        <module>muse-springmvc</module>
+        <module>muse-util</module>
+        <module>muse-zookeeper</module>
     </modules>
 
     <properties>
