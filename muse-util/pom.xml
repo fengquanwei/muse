@@ -13,7 +13,6 @@
 
     <properties>
         <mail.version>1.4.7</mail.version>
-        <guava.version>27.0-jre</guava.version>
     </properties>
 
     <dependencies>
@@ -22,13 +21,6 @@
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>${mail.version}</version>
-        </dependency>
-
-        <!--guava-->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
     </dependencies>
 

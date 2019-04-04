@@ -11,5 +11,17 @@
 
     <artifactId>muse-tool</artifactId>
 
+    <properties>
+        <guava.version>27.0-jre</guava.version>
+    </properties>
+
+    <dependencies>
+        <!--guava-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

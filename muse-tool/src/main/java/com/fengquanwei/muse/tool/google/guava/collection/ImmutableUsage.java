@@ -1,4 +1,4 @@
-package com.fengquanwei.muse.util.google.guava.collection;
+package com.fengquanwei.muse.tool.google.guava.collection;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;

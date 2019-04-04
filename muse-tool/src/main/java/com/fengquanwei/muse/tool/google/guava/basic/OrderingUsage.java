@@ -1,4 +1,4 @@
-package com.fengquanwei.muse.util.google.guava.basic;
+package com.fengquanwei.muse.tool.google.guava.basic;
 
 import com.google.common.collect.Ordering;
 import com.google.common.primitives.Ints;
