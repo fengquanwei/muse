@@ -155,6 +155,20 @@ public class StringUsage {
             char c = (char) i;
             logger.info("{} : {}", i, c);
         }
+
+        // 枚举代码点
+        logger.info("枚举代码点");
+        String string = "Ƶ is the set of integers";
+        for (int i = 0; i < string.length(); ) {
+            int codePoint = string.codePointAt(i);
+            logger.info("{} : {}", codePoint, new String(Character.toChars(codePoint)));
+
+            if (Character.isSupplementaryCodePoint(codePoint)) {
+                i += 2;
+            } else {
+                ++i;
+            }
+        }
     }
 }
 
