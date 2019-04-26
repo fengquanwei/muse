@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 字符串的用法
+ * 字符的用法
  * <p>
  * ASCII 控制字符
  * <p>
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * ASCII 可显示字符
  * <p>
  * 二进制	    十进制	十六进制	图形
- * 0010 0000	32	    20	    （空格）(␠)
+ * 0010 0000	32	    20	    空格
  * 0010 0001	33	    21	    !
  * 0010 0010	34	    22	    "
  * 0010 0011	35	    23	    #
@@ -141,32 +141,39 @@ import org.slf4j.LoggerFactory;
  * 0111 1100	124	    7C	    |
  * 0111 1101	125	    7D	    }
  * 0111 1110	126	    7E	    ~
+ * 0111 1111	127	    7F	    退格
  *
  * @author fengquanwei
  * @create 2019/4/18 22:17
  **/
-public class StringUsage {
-    private static final Logger logger = LoggerFactory.getLogger(StringUsage.class);
+public class CharacterUsage {
+    private static final Logger logger = LoggerFactory.getLogger(CharacterUsage.class);
 
     public static void main(String[] args) {
-        // ASCII 字符
+        // ASCII 字符（七位二进制）
         logger.info("ASCII 字符");
-        for (int i = 0; i < 128; i++) {
+        for (int i = 0; i < Math.pow(2, 7); i++) {
             char c = (char) i;
             logger.info("{} : {}", i, c);
         }
 
+        String string = "\uD835\uDD68 is the set of integers";
+
+        // 枚举代码单元
+        logger.info("枚举代码单元");
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            logger.info("{} : {}", (int) c, c);
+        }
+
         // 枚举代码点
         logger.info("枚举代码点");
-        String string = "Ƶ is the set of integers";
-        for (int i = 0; i < string.length(); ) {
+        for (int i = 0; i < string.length(); i++) {
             int codePoint = string.codePointAt(i);
             logger.info("{} : {}", codePoint, new String(Character.toChars(codePoint)));
 
             if (Character.isSupplementaryCodePoint(codePoint)) {
-                i += 2;
-            } else {
-                ++i;
+                i++;
             }
         }
     }
