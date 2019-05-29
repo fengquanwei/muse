@@ -150,13 +150,50 @@ public class CharacterUsage {
     private static final Logger logger = LoggerFactory.getLogger(CharacterUsage.class);
 
     public static void main(String[] args) {
-        // ASCII 字符（七位二进制）
+        // ASCII 字符
+//        ascii();
+
+        // UNICODE 字符
+//        unicode();
+
+        // 测试代码点
+//        codePoint();
+    }
+
+    /**
+     * ASCII 字符（7 位二进制）
+     */
+    private static void ascii() {
         logger.info("ASCII 字符");
-        for (int i = 0; i < Math.pow(2, 7); i++) {
+        for (int i = 0; i < 1 << 7; i++) {
             char c = (char) i;
             logger.info("{} : {}", i, c);
         }
+    }
 
+    /**
+     * UNICODE 字符（16 位二进制）
+     * TODO 注意：执行即崩溃，原因待查
+     */
+    private static void unicode() {
+        logger.info("UNICODE 字符");
+
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i <= Character.MAX_CODE_POINT; i++) {
+            if (i % 100 == 0) {
+                sb.append("\n");
+            }
+
+            sb.append(new String(Character.toChars(i)));
+        }
+
+        logger.info(sb.toString());
+    }
+
+    /**
+     * 代码点
+     */
+    private static void codePoint() {
         String string = "\uD835\uDD68 is the set of integers";
 
         // 枚举代码单元
