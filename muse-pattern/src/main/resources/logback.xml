@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="appName" value="muse-designpattern"/>
+    <property name="appName" value="muse-pattern"/>
     <property name="logPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c{36} - %msg%n"/>
     <property name="maxHistory" value="30"/>
     <property name="maxFileSize" value="512MB"/>

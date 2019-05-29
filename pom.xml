@@ -15,7 +15,7 @@
         <module>muse-tool</module>
         <module>muse-util</module>
         <module>muse-zookeeper</module>
-        <module>muse-designpattern</module>
+        <module>muse-pattern</module>
     </modules>
 
     <properties>
