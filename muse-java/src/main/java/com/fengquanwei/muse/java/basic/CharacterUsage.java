@@ -1,8 +1,5 @@
 package com.fengquanwei.muse.java.basic;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * 字符的用法
  * <p>
@@ -147,8 +144,6 @@ import org.slf4j.LoggerFactory;
  * @create 2019/4/18 22:17
  **/
 public class CharacterUsage {
-    private static final Logger logger = LoggerFactory.getLogger(CharacterUsage.class);
-
     public static void main(String[] args) {
         // ASCII 字符
 //        ascii();
@@ -164,22 +159,22 @@ public class CharacterUsage {
      * ASCII 字符（7 位二进制）
      */
     private static void ascii() {
-        logger.info("ASCII 字符");
+        System.out.println("ASCII 字符");
         for (int i = 0; i < 1 << 7; i++) {
             char c = (char) i;
-            logger.info("{} : {}", i, c);
+            System.out.println(i + " : " + c);
         }
     }
 
     /**
      * UNICODE 字符（16 位二进制）
-     * TODO 注意：执行即崩溃，原因待查
      */
     private static void unicode() {
-        logger.info("UNICODE 字符");
+        System.out.println("UNICODE 字符");
 
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i <= Character.MAX_CODE_POINT; i++) {
+//        for (int i = 0; i <= Character.MAX_CODE_POINT; i++) { // 警告：一定崩溃
+        for (int i = 0; i <= 10000; i++) {
             if (i % 100 == 0) {
                 sb.append("\n");
             }
@@ -187,7 +182,7 @@ public class CharacterUsage {
             sb.append(new String(Character.toChars(i)));
         }
 
-        logger.info(sb.toString());
+        System.out.println(sb);
     }
 
     /**
@@ -197,17 +192,17 @@ public class CharacterUsage {
         String string = "\uD835\uDD68 is the set of integers";
 
         // 枚举代码单元
-        logger.info("枚举代码单元");
+        System.out.println("枚举代码单元");
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);
-            logger.info("{} : {}", (int) c, c);
+            System.out.println((int) c + " : " + c);
         }
 
         // 枚举代码点
-        logger.info("枚举代码点");
+        System.out.println("枚举代码点");
         for (int i = 0; i < string.length(); i++) {
             int codePoint = string.codePointAt(i);
-            logger.info("{} : {}", codePoint, new String(Character.toChars(codePoint)));
+            System.out.println(codePoint + " : " + new String(Character.toChars(codePoint)));
 
             if (Character.isSupplementaryCodePoint(codePoint)) {
                 i++;
