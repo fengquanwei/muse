@@ -1,4 +1,4 @@
-package com.fengquanwei.muse.java.basic;
+package com.fengquanwei.muse.java.base;
 
 /**
  * 字符的用法
