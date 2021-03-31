@@ -12,7 +12,7 @@
     <artifactId>muse-tool</artifactId>
 
     <properties>
-        <guava.version>27.0-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
     </properties>
 
     <dependencies>
