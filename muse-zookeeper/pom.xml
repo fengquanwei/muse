@@ -12,7 +12,7 @@
     <artifactId>muse-zookeeper</artifactId>
 
     <properties>
-        <zookeeper.version>3.4.5</zookeeper.version>
+        <zookeeper.version>3.4.14</zookeeper.version>
         <zkclient.version>0.10</zkclient.version>
         <curator.version>2.4.2</curator.version>
         <log4j.versin>1.2.17</log4j.versin>
